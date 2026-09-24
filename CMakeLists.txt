@@ -27,13 +27,45 @@ add_subdirectory(gensrc)
 # -----------------------------------------------------------------------
 set(QL_BUILD_EXAMPLES   OFF CACHE BOOL "" FORCE)
 set(QL_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
-# QL_TAGGED_LAYOUT is ON by default when MSVC is used, which sets
-# CMAKE_RELEASE_POSTFIX / CMAKE_DEBUG_POSTFIX globally.  Those global
-# postfixes would affect every cmake target in the build, not just
-# ql_library.  We therefore turn the flag OFF here so that only
-# ql_library gets its postfix set (we do that explicitly below).
-set(QL_TAGGED_LAYOUT OFF CACHE BOOL "" FORCE)
-add_subdirectory(QuantLib)
+
+# -----------------------------------------------------------------------
+# QuantLib
+#
+# If QUANTLIB_DIR is set, use an installed QuantLib package.
+# Otherwise, build QuantLib from the bundled source directory.
+#
+# Installed QuantLib must provide:
+#   QuantLibConfig.cmake
+# -----------------------------------------------------------------------
+
+set(QL_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(QL_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
+
+if(QUANTLIB_DIR)
+
+    message(STATUS "Using installed QuantLib: ${QUANTLIB_DIR}")
+
+    find_package(QuantLib CONFIG REQUIRED
+        PATHS "${QUANTLIB_DIR}"
+        NO_DEFAULT_PATH
+    )
+
+else()
+
+    message(STATUS "Building bundled QuantLib: ${CMAKE_CURRENT_SOURCE_DIR}/QuantLib")
+
+    # QL_TAGGED_LAYOUT is ON by default when MSVC is used, which sets
+    # CMAKE_RELEASE_POSTFIX / CMAKE_DEBUG_POSTFIX globally. Those global
+    # postfixes would affect every CMake target in the build, not just
+    # ql_library. Turn it OFF so that only ql_library gets its postfix
+    # set explicitly below.
+
+    set(QL_TAGGED_LAYOUT OFF CACHE BOOL "" FORCE)
+
+    add_subdirectory(QuantLib)
+
+endif()
+
 
 # Apply tagged layout postfixes to ql_library only, mirroring what
 # QL_TAGGED_LAYOUT would have done, so the library filename matches
