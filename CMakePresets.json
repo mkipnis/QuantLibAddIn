@@ -192,7 +192,7 @@
     "generator": "Unix Makefiles",
     "binaryDir": "${sourceDir}/build/${presetName}",
     "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_CXX_STANDARD": "17",
@@ -211,6 +211,27 @@
             "intelliSenseMode": "macos-clang-arm64",
             "hostOS": ["macOS"]
         }
+    }
+},
+{
+    "name": "macos-xcode",
+    "displayName": "macOS Xcode (system Boost)",
+    "description": "Native macOS build using AppleClang and system Boost via Xcode.",
+    "generator": "Xcode",
+    "binaryDir": "${sourceDir}/build/${presetName}",
+    "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_STANDARD": "17",
+        "QL_BUILD_EXAMPLES": false,
+        "QL_BUILD_TEST_SUITE": false,
+        "QL_ENABLE_SESSIONS": true,
+        "Boost_USE_STATIC_LIBS": false
+    },
+    "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
     }
 }
 	
