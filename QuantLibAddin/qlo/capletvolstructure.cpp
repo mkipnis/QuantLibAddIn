@@ -55,7 +55,7 @@ namespace QuantLibAddin {
                                     bool permanent)
     : OptionletVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::OptionletVolatilityStructure>(new
             QuantLib::ConstantOptionletVolatility(settlementDays,
                                                   cal,
                                                   bdc,
@@ -72,7 +72,7 @@ namespace QuantLibAddin {
                 bool permanent)
     : OptionletVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::SpreadedOptionletVolatility>(new
             QuantLib::SpreadedOptionletVolatility(baseVol,
                                                   spread));
     }
@@ -83,7 +83,7 @@ namespace QuantLibAddin {
                         bool permanent)
     : OptionletVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::StrippedOptionletAdapter>(new
             QuantLib::StrippedOptionletAdapter(v));
     }
 
@@ -98,7 +98,7 @@ namespace QuantLibAddin {
                                 bool permanent)
     : CapFloorTermVolatilityStructure(properties, permanent)
     {
-       libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+       libraryObject_ = shared_ptr<QuantLib::CapFloorTermVolCurve>(new
             QuantLib::CapFloorTermVolCurve(settlementDays,
                                            calendar,
                                            bdc,
@@ -119,7 +119,7 @@ namespace QuantLibAddin {
                                 bool permanent)
     : CapFloorTermVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::CapFloorTermVolSurface>(new
             QuantLib::CapFloorTermVolSurface(settlementDays,
                                              calendar,
                                              bdc,

@@ -44,7 +44,7 @@ namespace QuantLib {
 
 namespace QuantLibAddin {
 
-    class Interpolation : public Extrapolator, public QuantLib::LazyObject {
+class Interpolation : public ObjectHandler::LibraryObject<QuantLib::Interpolation>, public QuantLib::LazyObject {
       public:
         QuantLib::Real operator()(QuantLib::Real x,
                                   bool allowExtrapolation) const {

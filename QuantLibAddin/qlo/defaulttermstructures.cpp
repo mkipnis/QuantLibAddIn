@@ -44,7 +44,7 @@ namespace QuantLibAddin {
                              bool permanent)
     : HazardRateStructure(properties, permanent)
     {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::FlatHazardRate>(new
             QuantLib::FlatHazardRate(nDays, calendar, hazardRate, dayCounter));
     }
 

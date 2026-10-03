@@ -27,12 +27,15 @@
 
 namespace QuantLib {
 
+    class TermStructure;
+
     class OptionletVolatilityStructure;
     class CapFloorTermVolatilityStructure;
 
     class SwaptionVolatilityStructure;
 
     class DefaultProbabilityTermStructure;
+    class CorrelationTermStructure;
 
     class InflationTermStructure;
 
@@ -43,13 +46,52 @@ namespace QuantLib {
 }
 
 namespace QuantLibAddin {
+
+    class TermStructure : public ObjectHandler::LibraryObject<QuantLib::TermStructure> {
+        protected:
+            OH_LIB_CTOR(TermStructure, QuantLib::TermStructure)
+    };
+
+class YieldTermStructure : public ObjectHandler::LibraryObject<QuantLib::YieldTermStructure> {
+    protected:
+        OH_LIB_CTOR(YieldTermStructure, QuantLib::YieldTermStructure)
+};
+
+class VolatilityTermStructure : public ObjectHandler::LibraryObject<QuantLib::VolatilityTermStructure> {
+    protected:
+        OH_LIB_CTOR(VolatilityTermStructure, QuantLib::VolatilityTermStructure)
+};
+
+
+class OptionletVolatilityStructure : public ObjectHandler::LibraryObject<QuantLib::OptionletVolatilityStructure> {
+    protected:
+        OH_LIB_CTOR(OptionletVolatilityStructure, QuantLib::OptionletVolatilityStructure)
+};
+
+
+class DefaultProbabilityTermStructure : public ObjectHandler::LibraryObject<QuantLib::DefaultProbabilityTermStructure> {
+    protected:
+        OH_LIB_CTOR(DefaultProbabilityTermStructure, QuantLib::DefaultProbabilityTermStructure)
+};
+
+class CorrelationTermStructure : public ObjectHandler::LibraryObject<QuantLib::CorrelationTermStructure>
+{
+    protected:
+        OH_LIB_CTOR( CorrelationTermStructure, QuantLib::CorrelationTermStructure)
+    
+};
+
+
+}
+
+namespace QuantLibAddin {
      
-    OH_OBJ_CLASS(TermStructure, Extrapolator);
-        OH_OBJ_CLASS(YieldTermStructure,              TermStructure);
-        OH_OBJ_CLASS(DefaultProbabilityTermStructure, TermStructure);
-        OH_OBJ_CLASS(CorrelationTermStructure, TermStructure);
+    //OH_OBJ_CLASS(TermStructure, Extrapolator);
+        //OH_OBJ_CLASS(YieldTermStructure,              TermStructure);
+        //OH_OBJ_CLASS(DefaultProbabilityTermStructure, TermStructure);
+        //OH_OBJ_CLASS(CorrelationTermStructure, DefaultProbabilityTermStructure);
         OH_OBJ_CLASS(InflationTermStructure,          TermStructure);
-        OH_OBJ_CLASS(VolatilityTermStructure,         TermStructure);
+        //OH_OBJ_CLASS(VolatilityTermStructure,         VolatilityTermStructure);
             OH_OBJ_CLASS(BlackAtmVolCurve,                VolatilityTermStructure);
                 OH_OBJ_CLASS(BlackVolSurface, BlackAtmVolCurve);
                     OH_OBJ_CLASS(InterestRateVolSurface, BlackVolSurface);
@@ -57,7 +99,7 @@ namespace QuantLibAddin {
             OH_OBJ_CLASS(SwaptionVolatilityStructure,     VolatilityTermStructure);
                 OH_OBJ_CLASS(SwaptionVolatilityDiscrete, SwaptionVolatilityStructure);
                     OH_OBJ_CLASS(SwaptionVolatilityCube, SwaptionVolatilityDiscrete);
-            OH_OBJ_CLASS(OptionletVolatilityStructure,    VolatilityTermStructure);
+            //OH_OBJ_CLASS(OptionletVolatilityStructure,    OptionletVolatilityStructure);
             OH_OBJ_CLASS(CapFloorTermVolatilityStructure, VolatilityTermStructure);
 }
 

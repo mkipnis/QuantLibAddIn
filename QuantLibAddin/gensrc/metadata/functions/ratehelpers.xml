@@ -239,7 +239,7 @@
             <description>deposit length (e.g. 3M for three months).</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 2).</description>
           </Parameter>
@@ -336,7 +336,7 @@
             <description>quote.</description>
           </Parameter>
           <Parameter name='SettlDays' default='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>Number of days to spot date.</description>
           </Parameter>
@@ -445,7 +445,7 @@
       <ParameterList>
         <Parameters>
           <Parameter name='SettlDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap settlement days.</description>
           </Parameter>
@@ -588,12 +588,12 @@
             <description>Period to start date.</description>
           </Parameter>
           <Parameter name='LengthInMonths' exampleValue='9'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>months to end.</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 2).</description>
           </Parameter>
@@ -697,7 +697,7 @@
             <description>swap length (e.g. 5Y for five years).</description>
           </Parameter>
           <Parameter name='SettlDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap settlement days.</description>
           </Parameter>
@@ -762,7 +762,7 @@
             <description>swap length (e.g. 5Y for five years).</description>
           </Parameter>
           <Parameter name='SettlDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap settlement days.</description>
           </Parameter>
@@ -822,7 +822,7 @@
             <description>swap length (e.g. 5Y for five years).</description>
           </Parameter>
           <Parameter name='SettlDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap settlement days.</description>
           </Parameter>
@@ -892,7 +892,7 @@
             <description>swap length (e.g. 5Y for five years).</description>
           </Parameter>
           <Parameter name='SettlDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap settlement days.</description>
           </Parameter>
@@ -1260,7 +1260,7 @@
             <description>fx swap length (e.g. 3M for three months).</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 2).</description>
           </Parameter>
