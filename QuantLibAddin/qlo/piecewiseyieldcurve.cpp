@@ -120,14 +120,14 @@ namespace QuantLibAddin {
     
     class CallerBase {
     public:
-        virtual const std::vector<QuantLib::Time>& times(const QuantLib::Extrapolator *extrapolator) const = 0;
-        virtual const std::vector<QuantLib::Date>& dates(const QuantLib::Extrapolator *extrapolator) const = 0;
-        virtual const std::vector<QuantLib::Real>& data(const QuantLib::Extrapolator *extrapolator) const = 0;
+        virtual const std::vector<QuantLib::Time>& times(const QuantLib::YieldTermStructure *extrapolator) const = 0;
+        virtual const std::vector<QuantLib::Date>& dates(const QuantLib::YieldTermStructure *extrapolator) const = 0;
+        virtual const std::vector<QuantLib::Real>& data(const QuantLib::YieldTermStructure *extrapolator) const = 0;
         //virtual const std::vector<QuantLib::Real>& improvements(const QuantLib::Extrapolator *extrapolator) const = 0;
         //virtual QuantLib::Size iterations(const QuantLib::Extrapolator *extrapolator) const = 0;
 
-        virtual const std::vector<QuantLib::Time>& jumpTimes(const QuantLib::Extrapolator *extrapolator) const = 0;
-        virtual const std::vector<QuantLib::Date>& jumpDates(const QuantLib::Extrapolator *extrapolator) const = 0;
+        virtual const std::vector<QuantLib::Time>& jumpTimes(const QuantLib::YieldTermStructure *extrapolator) const = 0;
+        virtual const std::vector<QuantLib::Date>& jumpDates(const QuantLib::YieldTermStructure *extrapolator) const = 0;
 
         virtual ~CallerBase() {}
     };
@@ -141,7 +141,7 @@ namespace QuantLibAddin {
 
         typedef QuantLib::PiecewiseYieldCurve<Traits, Interpolator> CurveClass;
 
-        const CurveClass *get(const QuantLib::Extrapolator *extrapolator) const {
+        const CurveClass *get(const QuantLib::YieldTermStructure *extrapolator) const {
 
             const CurveClass *ret = dynamic_cast<const CurveClass*>(extrapolator);
             OH_REQUIRE(ret, "Unable to convert from type " << typeid(extrapolator).name()
@@ -149,15 +149,15 @@ namespace QuantLibAddin {
             return ret;
         }
 
-        const std::vector<QuantLib::Time>& times(const QuantLib::Extrapolator *extrapolator) const {
+        const std::vector<QuantLib::Time>& times(const QuantLib::YieldTermStructure *extrapolator)  const override {
             return get(extrapolator)->times();
         }
 
-        const std::vector<QuantLib::Date>& dates(const QuantLib::Extrapolator *extrapolator) const {
+        const std::vector<QuantLib::Date>& dates(const QuantLib::YieldTermStructure *extrapolator)  const override {
             return get(extrapolator)->dates();
         }
 
-        const std::vector<QuantLib::Real>& data(const QuantLib::Extrapolator *extrapolator) const {
+        const std::vector<QuantLib::Real>& data(const QuantLib::YieldTermStructure *extrapolator)  const override {
             return get(extrapolator)->data();
         }
 
@@ -169,11 +169,11 @@ namespace QuantLibAddin {
         //    return get(extrapolator)->iterations();
         //}
 
-        const std::vector<QuantLib::Time>& jumpTimes(const QuantLib::Extrapolator *extrapolator) const {
+        const std::vector<QuantLib::Time>& jumpTimes(const QuantLib::YieldTermStructure *extrapolator)  const override {
             return get(extrapolator)->jumpTimes();
         }
 
-        const std::vector<QuantLib::Date>& jumpDates(const QuantLib::Extrapolator *extrapolator) const {
+        const std::vector<QuantLib::Date>& jumpDates(const QuantLib::YieldTermStructure *extrapolator)  const override {
             return get(extrapolator)->jumpDates();
         }
 

@@ -46,7 +46,7 @@ namespace QuantLibAddin {
         bool permanent)
     : SwaptionVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::VolatilityTermStructure>(new
             QuantLib::ConstantSwaptionVolatility(settlementDays,
                                                  cal,
                                                  bdc,
@@ -61,7 +61,7 @@ namespace QuantLibAddin {
             bool permanent)
     : SwaptionVolatilityStructure(properties, permanent)
     {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::VolatilityTermStructure>(new
             QuantLib::SpreadedSwaptionVolatility(underlyingVolStructure,
                                                  spread));
     }
@@ -77,7 +77,7 @@ namespace QuantLibAddin {
             bool permanent)
     : SwaptionVolatilityDiscrete(properties, permanent)
     {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::VolatilityTermStructure>(new
             QuantLib::SwaptionVolatilityMatrix(calendar,
                                                bdc,
                                                optionTenors,
@@ -110,7 +110,7 @@ namespace QuantLibAddin {
         bool vegaWeightedSmileFit,
         bool permanent) : SwaptionVolatilityCube(properties, permanent)
     {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::VolatilityTermStructure>(new
             QuantLib::InterpolatedSwaptionVolatilityCube(atmVol,
                                        optionTenors,
                                        swapTenors,
@@ -140,7 +140,7 @@ namespace QuantLibAddin {
         bool permanent) : SwaptionVolatilityCube(properties, permanent)
     {
         QL_REQUIRE(!atmVol.empty(), "atm vol handle not linked to anything");
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = boost::shared_ptr<QuantLib::VolatilityTermStructure>(new
             QuantLib::SabrSwaptionVolatilityCube(atmVol,
                                        optionTenors,
                                        swapTenors,

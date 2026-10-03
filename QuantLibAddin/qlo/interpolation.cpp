@@ -69,7 +69,7 @@ namespace QuantLibAddin {
                                  const vector<Real>& x,
                                  const vector<Handle<Quote> >& yh,
                                  bool permanent)
-    : Extrapolator(prop, permanent)
+        :  ObjectHandler::LibraryObject<QuantLib::Interpolation>(prop, permanent)
     {
         QL_REQUIRE(!x.empty(), "empty x vector");
         Size n = x.size();
@@ -174,16 +174,16 @@ namespace QuantLibAddin {
         bool permanent)
     : Interpolation(properties, x, yh, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::Interpolation>(new
             QuantLib::CubicInterpolation(x_.begin(), x_.end(),
                                          y_.begin(),
                                          da, monotonic,
                                          leftCondition, leftValue,
                                          rightCondition, rightValue));
-        qlInterpolation_ = dynamic_pointer_cast<QuantLib::Interpolation>(
-            libraryObject_);
-        qlCubicInterpolation_ = dynamic_pointer_cast<QuantLib::CubicInterpolation>(
-            libraryObject_);
+        
+        qlInterpolation_ = qlCubicInterpolation_;
+
+        libraryObject_ = qlCubicInterpolation_;
     }
 
     AbcdInterpolation::AbcdInterpolation(
@@ -204,16 +204,17 @@ namespace QuantLibAddin {
             bool permanent)
     : Interpolation(properties, x, yh, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
-            QuantLib::AbcdInterpolation(x_.begin(), x_.end(), y_.begin(),
-                                        a, b, c, d,
-                                        aIsFixed, bIsFixed, cIsFixed, dIsFixed,
-                                        vegaWeighted,
-                                        ec, om));
-        qlInterpolation_ = dynamic_pointer_cast<QuantLib::Interpolation>(
-            libraryObject_);
-        qlAbcdInterpolation_ = dynamic_pointer_cast<QuantLib::AbcdInterpolation>(
-            libraryObject_);
+        boost::shared_ptr<QuantLib::AbcdInterpolation> abcd(
+            new QuantLib::AbcdInterpolation(
+                x_.begin(), x_.end(), y_.begin(),
+                a, b, c, d,
+                aIsFixed, bIsFixed, cIsFixed, dIsFixed,
+                vegaWeighted,
+                ec, om));
+
+        libraryObject_ = abcd;
+        qlInterpolation_ = abcd;
+        qlAbcdInterpolation_ = abcd;
     }
 
     SABRInterpolation::SABRInterpolation(
@@ -236,17 +237,18 @@ namespace QuantLibAddin {
                                     bool permanent)
     : Interpolation(p, x, yh, permanent), forwardh_(forwardh), forward_(0.01)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
-            QuantLib::SABRInterpolation(x_.begin(), x_.end(), y_.begin(),
-                                        t, forward_, alpha, beta, nu, rho,
-                                        isAlphaFixed, isBetaFixed,
-                                        isNuFixed, isRhoFixed,
-                                        vegaWeighted,
-                                        ec, om));
-        qlInterpolation_ = dynamic_pointer_cast<QuantLib::Interpolation>(
-            libraryObject_);
-        qlSABRInterpolation_ = dynamic_pointer_cast<QuantLib::SABRInterpolation>(
-            libraryObject_);
+        boost::shared_ptr<QuantLib::SABRInterpolation> sabr(
+            new QuantLib::SABRInterpolation(
+                x_.begin(), x_.end(), y_.begin(),
+                t, forward_, alpha, beta, nu, rho,
+                isAlphaFixed, isBetaFixed,
+                isNuFixed, isRhoFixed,
+                vegaWeighted,
+                ec, om));
+
+        libraryObject_ = sabr;
+        qlInterpolation_ = sabr;
+        qlSABRInterpolation_ = sabr;
     }
 
 }

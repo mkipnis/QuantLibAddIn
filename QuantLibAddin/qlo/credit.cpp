@@ -248,9 +248,14 @@ namespace QuantLibAddin {
         QL_REQUIRE(!dates.empty(), "no input dates given");
         QL_REQUIRE(dates.size() == hazardRates.size(), 
                    "vector sizes differ");
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(
-        new QuantLib::InterpolatedHazardRateCurve<QuantLib::BackwardFlat>(
- 				 dates, hazardRates, dayCounter));
+            
+            boost::shared_ptr<
+                QuantLib::InterpolatedHazardRateCurve<QuantLib::BackwardFlat>
+            > curve(
+                new QuantLib::InterpolatedHazardRateCurve<QuantLib::BackwardFlat>(
+                    dates, hazardRates, dayCounter));
+
+            libraryObject_ = curve;
     }
 
     PiecewiseHazardRateCurve::PiecewiseHazardRateCurve(
@@ -264,21 +269,41 @@ namespace QuantLibAddin {
         : DefaultProbabilityTermStructure(properties, permanent) {
 
         if(interpolator == std::string("LINEAR")){
-            libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
-                   QuantLib::PiecewiseDefaultCurve<QuantLib::HazardRate,
-                        QuantLib::Linear>(
-                            0, 
-                            calendar,
-                            helpers, 
-                            dayCounter));
+            
+            boost::shared_ptr<
+                   QuantLib::PiecewiseDefaultCurve<
+                       QuantLib::HazardRate,
+                       QuantLib::Linear
+                   >
+               > curve(
+                   new QuantLib::PiecewiseDefaultCurve<
+                       QuantLib::HazardRate,
+                       QuantLib::Linear
+                   >(
+                       0,
+                       calendar,
+                       helpers,
+                       dayCounter));
+
+               libraryObject_ = curve;
+            
         }else if(interpolator == std::string("BACKWARDFLAT")) {
-            libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
-                   QuantLib::PiecewiseDefaultCurve<QuantLib::HazardRate,
-                        QuantLib::BackwardFlat>(
-                            0, 
-                            calendar,
-                            helpers, 
-                            dayCounter));
+            boost::shared_ptr<
+                  QuantLib::PiecewiseDefaultCurve<
+                      QuantLib::HazardRate,
+                      QuantLib::BackwardFlat
+                  >
+              > curve(
+                  new QuantLib::PiecewiseDefaultCurve<
+                      QuantLib::HazardRate,
+                      QuantLib::BackwardFlat
+                  >(
+                      0,
+                      calendar,
+                      helpers,
+                      dayCounter));
+
+              libraryObject_ = curve;
         }else{
             QL_FAIL("Unrecognised interpolator");
         }
@@ -321,8 +346,21 @@ namespace QuantLibAddin {
             QuantLib::Real accuracy,
             bool permanent)
         : YieldTermStructure(properties, permanent) {
-        libraryObject_ = boost::shared_ptr<QuantLib::Extrapolator>(new
-               QuantLib::PiecewiseYieldCurve<QuantLib::Discount,QuantLib::LogLinear>(referenceDate, helpers, dayCounter));
+            boost::shared_ptr<
+                QuantLib::PiecewiseYieldCurve<
+                    QuantLib::Discount,
+                    QuantLib::LogLinear
+                >
+            > curve(
+                new QuantLib::PiecewiseYieldCurve<
+                    QuantLib::Discount,
+                    QuantLib::LogLinear
+                >(
+                    referenceDate,
+                    helpers,
+                    dayCounter));
+
+            libraryObject_ = curve;
     }
 
     // RiskyFixedBond::RiskyFixedBond removed from the ORE fork of QuantLib

@@ -430,7 +430,7 @@
             <description>index tenor (e.g. 2D for two days , 3W for three weeks, 6M for six months, 1Y for one year).</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 2).</description>
           </Parameter>
@@ -486,7 +486,7 @@
             <description>index family name.</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='0'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 0).</description>
           </Parameter>
@@ -718,7 +718,7 @@
             <description>index tenor (e.g. 2D for two days, 3W for three weeks, 6M for six months, 1Y for one year).</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>swap rate fixing days (e.g. 2).</description>
           </Parameter>
@@ -921,7 +921,7 @@
             <description>index tenor (e.g. 2D for two days , 3W for three weeks, 6M for six months, 1Y for one year).</description>
           </Parameter>
           <Parameter name='FixingDays' exampleValue='2'>
-            <type>QuantLib::Natural</type>
+            <type>QuantLib::Size</type>
             <tensorRank>scalar</tensorRank>
             <description>fixing days (e.g. 2).</description>
           </Parameter>

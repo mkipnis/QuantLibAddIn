@@ -62,7 +62,7 @@ namespace QuantLibAddin {
         bool perm) : YieldTermStructure(prop, perm)
     {
         QL_REQUIRE(!dates.empty(), "no input dates given");
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::DiscountCurve(dates, dfs, dayCounter));
     }
 
@@ -73,7 +73,7 @@ namespace QuantLibAddin {
                          bool perm) : YieldTermStructure(prop, perm)
     {
         QL_REQUIRE(!dates.empty(), "no input dates given");
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::ZeroCurve(dates, zeroRates, dayCounter));
     }
 
@@ -84,7 +84,7 @@ namespace QuantLibAddin {
                                bool perm) : YieldTermStructure(prop, perm)
     {
         QL_REQUIRE(!dates.empty(), "no input dates given");
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::ForwardCurve(dates, fwdRates, dayCounter));
     }
 
@@ -98,7 +98,7 @@ namespace QuantLibAddin {
                              bool perm)
     : YieldTermStructure(prop, perm)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::FlatForward(nDays, calendar, forward, dayCounter,
                                   compounding, frequency));
     }
@@ -109,7 +109,7 @@ namespace QuantLibAddin {
             const QuantLib::Handle<QuantLib::Quote>& spread,
             bool perm) : YieldTermStructure(prop, perm) {
 
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::ForwardSpreadedTermStructure(hYTS, spread));
     }
 
@@ -121,7 +121,7 @@ namespace QuantLibAddin {
             bool perm)
     : YieldTermStructure(prop, perm)
     {
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
             QuantLib::ImpliedTermStructure(hYTS, referenceDate));
     }
 
@@ -145,91 +145,91 @@ namespace QuantLibAddin {
     {
         if (traitsID_=="DISCOUNT") {
             if (interpolatorID_=="BACKWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::BackwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="FORWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::ForwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Linear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LOGLINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogLinear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="CUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, false,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="LOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, false,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, true,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICLOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, true,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="KRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="KRUGERLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="FRITSCHBUTLANDCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="FRITSCHBUTLANDLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="PARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic, false)));
             } else if (interpolatorID_=="LOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, false)));
             } else if (interpolatorID_=="MONOTONICPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic, true)));
             } else if (interpolatorID_=="MONOTONICLOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedDiscountCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, true)));
             } else if (interpolatorID_ == "MIXEDLINEARCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -237,7 +237,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0,
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "LOGMIXEDLINEARCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -245,7 +245,7 @@ namespace QuantLibAddin {
                                                       CubicInterpolation::SecondDerivative, 0.0,
                                                       CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "MIXEDLINEARMONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -253,7 +253,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0,
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "LOGMIXEDLINEARMONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -261,7 +261,7 @@ namespace QuantLibAddin {
                                                       CubicInterpolation::SecondDerivative, 0.0,
                                                       CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "MIXEDLINEARKRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -269,7 +269,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0,
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "LOGMIXEDLINEARKRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -280,91 +280,91 @@ namespace QuantLibAddin {
                 QL_FAIL("unknown interpolatorID: " << interpolatorID_);
         } else if (traitsID_=="ZEROYIELD") {
             if (interpolatorID_=="BACKWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::BackwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="FORWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::ForwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Linear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LOGLINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogLinear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="CUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, false,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="LOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, false,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, true,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICLOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, true,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="KRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="KRUGERLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="FRITSCHBUTLANDCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="FRITSCHBUTLANDLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="PARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic, false)));
             } else if (interpolatorID_=="LOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, false)));
             } else if (interpolatorID_=="MONOTONICPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic, true)));
             } else if (interpolatorID_=="MONOTONICLOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, true)));
             } else if (interpolatorID_ == "MIXEDLINEARCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -372,7 +372,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0,
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "LOGMIXEDLINEARCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -380,7 +380,7 @@ namespace QuantLibAddin {
                                                       CubicInterpolation::SecondDerivative, 0.0,
                                                       CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "MIXEDLINEARMONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -388,7 +388,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0,
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_ == "LOGMIXEDLINEARMONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -397,7 +397,7 @@ namespace QuantLibAddin {
                                                       CubicInterpolation::SecondDerivative, 0.0)));
             }
             else if (interpolatorID_ == "MIXEDLINEARKRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::MixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::MixedLinearCubic(n, behavior,
@@ -406,7 +406,7 @@ namespace QuantLibAddin {
                                                    CubicInterpolation::SecondDerivative, 0.0)));
             }
             else if (interpolatorID_ == "LOGMIXEDLINEARKRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedZeroCurve<QuantLib::LogMixedLinearCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogMixedLinearCubic(n, behavior,
@@ -417,86 +417,86 @@ namespace QuantLibAddin {
                 QL_FAIL("unknown interpolatorID: " << interpolatorID_);
         } else if (traitsID_=="FORWARDRATE") {
             if (interpolatorID_=="BACKWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::BackwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="FORWARDFLAT") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::ForwardFlat>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Linear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="LOGLINEAR") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogLinear>(
                         dates, data, dayCounter, calendar, jumps, jumpDates));
             } else if (interpolatorID_=="CUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, false,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="LOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, false,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Spline, true,
                                         CubicInterpolation::SecondDerivative, 0.0,
                                         CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="MONOTONICLOGCUBICNATURALSPLINE") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Spline, true,
                                            CubicInterpolation::SecondDerivative, 0.0,
                                            CubicInterpolation::SecondDerivative, 0.0)));
             } else if (interpolatorID_=="KRUGERCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="KRUGERLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Kruger)));
             } else if (interpolatorID_=="FRITSCHBUTLANDCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="FRITSCHBUTLANDLOGCUBIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::FritschButland)));
             } else if (interpolatorID_=="PARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic)));
             } else if (interpolatorID_=="LOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, false)));
             } else if (interpolatorID_=="MONOTONICPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::Cubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::Cubic(CubicInterpolation::Parabolic, true)));
             } else if (interpolatorID_=="MONOTONICLOGPARABOLIC") {
-                libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+                libraryObject_ = shared_ptr<QuantLib::YieldTermStructure>(new
                     InterpolatedForwardCurve<QuantLib::LogCubic>(
                         dates, data, dayCounter, calendar, jumps, jumpDates,
                         QuantLib::LogCubic(CubicInterpolation::Parabolic, true)));
