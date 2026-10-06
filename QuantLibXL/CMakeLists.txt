@@ -105,6 +105,8 @@ endif()
 # -----------------------------------------------------------------------
 set(QLXL_VERSION_TAG "1_42_0")
 
+add_compile_definitions(NOMINMAX)
+
 # -----------------------------------------------------------------------
 # Compose the base output name (without config suffix)
 # The generator-expression below selects the right runtime tag at build time.

@@ -89,7 +89,7 @@
         },
         {
             "name": "windows-vs2026-x64-static-base",
-            "hidden": true,
+            "hidden": false,
             "inherits": "windows-vs2026-x64-base",
             "cacheVariables": {
                 "MSVC_LINK_DYNAMIC_RUNTIME": false,
@@ -115,7 +115,7 @@
         },
         {
             "name": "windows-vs2022-x64-static-base",
-            "hidden": true,
+            "hidden": false,
             "inherits": "windows-vs2022-x64-base",
             "cacheVariables": {
                 "MSVC_LINK_DYNAMIC_RUNTIME": false,

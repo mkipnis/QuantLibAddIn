@@ -147,17 +147,16 @@ namespace QuantLibAddin {
         QL_FAIL("class QuantLibAddin::MixedLinearCubicInterpolation is not "
             "supported under gcc");
 #else
-        libraryObject_ = shared_ptr<QuantLib::Extrapolator>(new
+        shared_ptr<QuantLib::MixedLinearCubicInterpolation> mixed_linear_interpolation(new
             QuantLib::MixedLinearCubicInterpolation(
                                                 x_.begin(), x_.end(),
                                                 y_.begin(), n, behavior,
                                                 da, monotonic,
                                                 leftCondition, leftValue,
                                                 rightCondition, rightValue));
-        qlInterpolation_ =
-            dynamic_pointer_cast<QuantLib::Interpolation>(libraryObject_);
-        qlMixedLinearCubicInterpolation_ =
-            dynamic_pointer_cast<QuantLib::MixedLinearCubicInterpolation>(libraryObject_);
+	libraryObject_ = mixed_linear_interpolation;
+        qlInterpolation_ = mixed_linear_interpolation;
+        qlMixedLinearCubicInterpolation_ = mixed_linear_interpolation;
 #endif
     }
 
@@ -174,15 +173,15 @@ namespace QuantLibAddin {
         bool permanent)
     : Interpolation(properties, x, yh, permanent)
     {
-        libraryObject_ = shared_ptr<QuantLib::Interpolation>(new
+        shared_ptr<QuantLib::CubicInterpolation> cubic_interpolation(new
             QuantLib::CubicInterpolation(x_.begin(), x_.end(),
                                          y_.begin(),
                                          da, monotonic,
                                          leftCondition, leftValue,
                                          rightCondition, rightValue));
         
+	qlCubicInterpolation_ = cubic_interpolation; 
         qlInterpolation_ = qlCubicInterpolation_;
-
         libraryObject_ = qlCubicInterpolation_;
     }
 
@@ -218,7 +217,7 @@ namespace QuantLibAddin {
     }
 
     SABRInterpolation::SABRInterpolation(
-                                    const shared_ptr<ValueObject>& p,
+                                    const shared_ptr<ValueObject>& prop,
                                     const vector<Real>& x,
                                     const vector<Handle<Quote> >& yh,
                                     QuantLib::Time t,
@@ -235,7 +234,7 @@ namespace QuantLibAddin {
                                     const shared_ptr<EndCriteria>& ec,
                                     const shared_ptr<OptimizationMethod>& om,
                                     bool permanent)
-    : Interpolation(p, x, yh, permanent), forwardh_(forwardh), forward_(0.01)
+    : ObjectHandler::LibraryObject<QuantLib::SABRInterpolation>(prop, permanent), forwardh_(forwardh), forward_(0.01)
     {
         boost::shared_ptr<QuantLib::SABRInterpolation> sabr(
             new QuantLib::SABRInterpolation(
@@ -247,7 +246,6 @@ namespace QuantLibAddin {
                 ec, om));
 
         libraryObject_ = sabr;
-        qlInterpolation_ = sabr;
         qlSABRInterpolation_ = sabr;
     }
 

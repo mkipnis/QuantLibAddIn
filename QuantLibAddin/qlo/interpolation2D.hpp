@@ -21,12 +21,16 @@
 #define qla_interpolation2D_hpp
 
 #include <oh/libraryobject.hpp>
-#include <qlo/extrapolator.hpp>
+#include <qlo/interpolation.hpp>
 #include <ql/math/matrix.hpp>
+
+namespace QuantLib {
+	class Interpolation2D;
+}
 
 namespace QuantLibAddin {
 
-    class Interpolation2D : public Extrapolator 
+    class Interpolation2D : public ObjectHandler::LibraryObject<QuantLib::Interpolation2D>, public QuantLib::LazyObject
     {
       public:
           Interpolation2D(const boost::shared_ptr<ObjectHandler::ValueObject>& properties,
@@ -35,9 +39,12 @@ namespace QuantLibAddin {
                         const std::vector<double>& y,
                         const QuantLib::Matrix& dataMatrix,
                         bool permanent);
+	void performCalculations() const;
       protected:
         std::vector<QuantLib::Real> x_, y_;
         QuantLib::Matrix dataMatrix_;
+
+	boost::shared_ptr<QuantLib::Interpolation2D> libraryObject_;
     };
     
 }

@@ -198,7 +198,7 @@ class Interpolation : public ObjectHandler::LibraryObject<QuantLib::Interpolatio
         boost::shared_ptr<QuantLib::AbcdInterpolation> qlAbcdInterpolation_;
     };
 
-    class SABRInterpolation : public Interpolation {
+    class SABRInterpolation : public ObjectHandler::LibraryObject<QuantLib::SABRInterpolation>, public QuantLib::LazyObject {
       public:
         SABRInterpolation(
             const boost::shared_ptr<ObjectHandler::ValueObject>& properties,
@@ -252,11 +252,17 @@ class Interpolation : public ObjectHandler::LibraryObject<QuantLib::Interpolatio
         }
         void performCalculations() const {
             forward_ = forwardh_->value();
-            Interpolation::performCalculations();
+            qlSABRInterpolation_->update();
         }
       protected:
         QuantLib::Handle<QuantLib::Quote> forwardh_;
         mutable QuantLib::Real forward_;
+
+	QuantLib::Size n_;
+	std::vector<QuantLib::Real> x_;
+	std::vector<QuantLib::Handle<QuantLib::Quote> > yh_;
+	mutable std::vector<QuantLib::Real> y_;
+
         boost::shared_ptr<QuantLib::SABRInterpolation> qlSABRInterpolation_;
     };
 

@@ -34,7 +34,7 @@ namespace QuantLibAddin {
         const std::vector<QuantLib::Real>& y,
         const QuantLib::Matrix& dataMatrix,
         bool permanent)
-    : Extrapolator(properties, permanent),
+    : ObjectHandler::LibraryObject<QuantLib::Interpolation2D>(properties, permanent),
       x_(x), y_(y), dataMatrix_(dataMatrix)
     {
         QL_REQUIRE(y.size()==dataMatrix.rows(),
@@ -55,5 +55,9 @@ namespace QuantLibAddin {
             (interpolation2DType, x_.begin(), x_.end(), y_.begin(), y_.end(), dataMatrix_);
 
     }
+
+	void Interpolation2D::performCalculations() const {
+		libraryObject_->update();
+	}
   
 }
