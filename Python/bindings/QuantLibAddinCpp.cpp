@@ -1,0 +1,399 @@
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "abcd.hpp"
+#include "accountingengines.hpp"
+#include "addincpp.hpp"
+#include "addincppdefines.hpp"
+#include "alphaform.hpp"
+#include "assetswap.hpp"
+#include "basketlossmodels.hpp"
+#include "bonds.hpp"
+#include "browniangenerators.hpp"
+#include "btp.hpp"
+#include "calibrationhelpers.hpp"
+#include "capfloor.hpp"
+#include "capletvolstructure.hpp"
+#include "cmsmarket.hpp"
+#include "correlation.hpp"
+#include "couponvectors.hpp"
+#include "credit.hpp"
+#include "ctsmmcapletcalibration.hpp"
+#include "curvestate.hpp"
+#include "defaulttermstructures.hpp"
+#include "evolutiondescription.hpp"
+#include "exercise.hpp"
+#include "forwardrateagreement.hpp"
+#include "fxforward.hpp"
+#include "garbagecollection.hpp"
+#include "handles.hpp"
+#include "index.hpp"
+#include "init.hpp"
+#include "instruments.hpp"
+#include "interpolation.hpp"
+#include "leg.hpp"
+#include "logging.hpp"
+#include "loop.hpp"
+#include "marketmodelevolvers.hpp"
+#include "marketmodels.hpp"
+#include "ohutils.hpp"
+#include "optimization.hpp"
+#include "options.hpp"
+#include "overnightindexedswap.hpp"
+#include "payoffs.hpp"
+#include "piecewiseyieldcurve.hpp"
+#include "pricingengines.hpp"
+#include "processes.hpp"
+#include "products.hpp"
+#include "quotes.hpp"
+#include "randomsequencegenerator.hpp"
+#include "rangeaccrual.hpp"
+#include "ratehelpers.hpp"
+#include "schedule.hpp"
+#include "sequencestatistics.hpp"
+#include "serialization.hpp"
+#include "settings.hpp"
+#include "shortratemodels.hpp"
+#include "smilesection.hpp"
+#include "statistics.hpp"
+#include "swap.hpp"
+#include "swaption.hpp"
+#include "swaptionvolstructure.hpp"
+#include "termstructures.hpp"
+#include "timeseries.hpp"
+#include "utilities.hpp"
+#include "valueobjects.hpp"
+#include "vanillaswap.hpp"
+#include "volatilities.hpp"
+#include "volatility.hpp"
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(quantlib_addin, m)
+{
+
+    py::class_<ObjectHandler::property_t>(m, "Property")
+    // Empty / missing property
+    .def(py::init<>())
+
+    // Scalar values
+    .def_static("from_bool", [](bool value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_int", [](int value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_long", [](long value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_double", [](double value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_string", [](const std::string& value) {
+        return ObjectHandler::property_t(value);
+    })
+
+    // Vector values
+    .def_static("from_bool_vector", [](const std::vector<bool>& value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_int_vector", [](const std::vector<int>& value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_long_vector", [](const std::vector<long>& value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_double_vector", [](const std::vector<double>& value) {
+        return ObjectHandler::property_t(value);
+    })
+    .def_static("from_string_vector",
+        [](const std::vector<std::string>& value) {
+            return ObjectHandler::property_t(value);
+        })
+
+    .def("missing", &ObjectHandler::property_t::missing);
+    
+    m.def("initializeAddin", &QuantLibAddinCpp::initializeAddin);
+    m.def("ohLogSetConsole", &QuantLibAddinCpp::ohLogSetConsole);
+    m.def("ohLogSetFile", &QuantLibAddinCpp::ohLogSetFile);
+    m.def("ohLogWriteMessage", &QuantLibAddinCpp::ohLogWriteMessage);
+    m.def("ohObjectLoad", &QuantLibAddinCpp::ohObjectLoad);
+    m.def("ohObjectLoadString", &QuantLibAddinCpp::ohObjectLoadString);
+    m.def("ohObjectPropertyValues2", &QuantLibAddinCpp::ohObjectPropertyValues2);
+    m.def("ohObjectSave", &QuantLibAddinCpp::ohObjectSave);
+    m.def("ohObjectSaveString", &QuantLibAddinCpp::ohObjectSaveString);
+    m.def("ohRepositoryDeleteAllObjects", &QuantLibAddinCpp::ohRepositoryDeleteAllObjects);
+    m.def("ohRepositoryLogObject", &QuantLibAddinCpp::ohRepositoryLogObject);
+    m.def("ohVersion", &QuantLibAddinCpp::ohVersion);
+    m.def("qlAbcdCalibration", &QuantLibAddinCpp::qlAbcdCalibration);
+    m.def("qlAbcdFunction", &QuantLibAddinCpp::qlAbcdFunction);
+    m.def("qlAbcdInterpolation", &QuantLibAddinCpp::qlAbcdInterpolation);
+    m.def("qlAbcdVol", &QuantLibAddinCpp::qlAbcdVol);
+    m.def("qlAccountingEngine", &QuantLibAddinCpp::qlAccountingEngine);
+    m.def("qlAddinVersion", &QuantLibAddinCpp::qlAddinVersion);
+    m.def("qlAlphaFormInverseLinear", &QuantLibAddinCpp::qlAlphaFormInverseLinear);
+    m.def("qlAlphaFormLinearHyperbolic", &QuantLibAddinCpp::qlAlphaFormLinearHyperbolic);
+    m.def("qlAmericanExercise", &QuantLibAddinCpp::qlAmericanExercise);
+    m.def("qlAnalyticCapFloorEngine", &QuantLibAddinCpp::qlAnalyticCapFloorEngine);
+    m.def("qlArmijoLineSearch", &QuantLibAddinCpp::qlArmijoLineSearch);
+    m.def("qlAssetSwap", &QuantLibAddinCpp::qlAssetSwap);
+    m.def("qlAssetSwap2", &QuantLibAddinCpp::qlAssetSwap2);
+    m.def("qlBMAIndex", &QuantLibAddinCpp::qlBMAIndex);
+    m.def("qlBTP", &QuantLibAddinCpp::qlBTP);
+    m.def("qlBTP2", &QuantLibAddinCpp::qlBTP2);
+    m.def("qlBachelierCapFloorEngine", &QuantLibAddinCpp::qlBachelierCapFloorEngine);
+    m.def("qlBachelierCapFloorEngine2", &QuantLibAddinCpp::qlBachelierCapFloorEngine2);
+    m.def("qlBarrierOption", &QuantLibAddinCpp::qlBarrierOption);
+    m.def("qlBaseCorrelationLossModel", &QuantLibAddinCpp::qlBaseCorrelationLossModel);
+    m.def("qlBaseCorrelationTermStructure", &QuantLibAddinCpp::qlBaseCorrelationTermStructure);
+    m.def("qlBermudanExercise", &QuantLibAddinCpp::qlBermudanExercise);
+    m.def("qlBinomialPricingEngine", &QuantLibAddinCpp::qlBinomialPricingEngine);
+    m.def("qlBlackCalculator", &QuantLibAddinCpp::qlBlackCalculator);
+    m.def("qlBlackCalculator2", &QuantLibAddinCpp::qlBlackCalculator2);
+    m.def("qlBlackCapFloorEngine", &QuantLibAddinCpp::qlBlackCapFloorEngine);
+    m.def("qlBlackCapFloorEngine2", &QuantLibAddinCpp::qlBlackCapFloorEngine2);
+    m.def("qlBlackCdsOptionEngine", &QuantLibAddinCpp::qlBlackCdsOptionEngine);
+    m.def("qlBlackConstantVol", &QuantLibAddinCpp::qlBlackConstantVol);
+    m.def("qlBlackScholesCalculator", &QuantLibAddinCpp::qlBlackScholesCalculator);
+    m.def("qlBlackScholesCalculator2", &QuantLibAddinCpp::qlBlackScholesCalculator2);
+    m.def("qlBlackSwaptionEngine", &QuantLibAddinCpp::qlBlackSwaptionEngine);
+    m.def("qlBlackSwaptionEngine2", &QuantLibAddinCpp::qlBlackSwaptionEngine2);
+    m.def("qlBond", &QuantLibAddinCpp::qlBond);
+    m.def("qlBondEngine", &QuantLibAddinCpp::qlBondEngine);
+    m.def("qlBondHelper", &QuantLibAddinCpp::qlBondHelper);
+    m.def("qlCCTEU", &QuantLibAddinCpp::qlCCTEU);
+    m.def("qlCMSwapCurveState", &QuantLibAddinCpp::qlCMSwapCurveState);
+    m.def("qlCTSMMCapletAlphaFormCalibration", &QuantLibAddinCpp::qlCTSMMCapletAlphaFormCalibration);
+    m.def("qlCTSMMCapletMaxHomogeneityCalibration", &QuantLibAddinCpp::qlCTSMMCapletMaxHomogeneityCalibration);
+    m.def("qlCTSMMCapletOriginalCalibration", &QuantLibAddinCpp::qlCTSMMCapletOriginalCalibration);
+    m.def("qlCaAsianOption", &QuantLibAddinCpp::qlCaAsianOption);
+    m.def("qlCapFloor", &QuantLibAddinCpp::qlCapFloor);
+    m.def("qlCapFloorTermVolCurve", &QuantLibAddinCpp::qlCapFloorTermVolCurve);
+    m.def("qlCapFloorTermVolSurface", &QuantLibAddinCpp::qlCapFloorTermVolSurface);
+    m.def("qlCmsCouponPricer", &QuantLibAddinCpp::qlCmsCouponPricer);
+    m.def("qlCmsLeg", &QuantLibAddinCpp::qlCmsLeg);
+    m.def("qlCmsMarket", &QuantLibAddinCpp::qlCmsMarket);
+    m.def("qlCmsRateBond", &QuantLibAddinCpp::qlCmsRateBond);
+    m.def("qlCmsZeroLeg", &QuantLibAddinCpp::qlCmsZeroLeg);
+    m.def("qlCompositeQuote", &QuantLibAddinCpp::qlCompositeQuote);
+    m.def("qlConjugateGradient", &QuantLibAddinCpp::qlConjugateGradient);
+    m.def("qlConstNotionalCrossCurrencyBasisSwapRateHelper", &QuantLibAddinCpp::qlConstNotionalCrossCurrencyBasisSwapRateHelper);
+    m.def("qlConstantOptionletVolatility", &QuantLibAddinCpp::qlConstantOptionletVolatility);
+    m.def("qlConstantSwaptionVolatility", &QuantLibAddinCpp::qlConstantSwaptionVolatility);
+    m.def("qlConundrumPricerByNumericalIntegration", &QuantLibAddinCpp::qlConundrumPricerByNumericalIntegration);
+    m.def("qlCotSwapFromFwdCorrelation", &QuantLibAddinCpp::qlCotSwapFromFwdCorrelation);
+    m.def("qlCotSwapToFwdAdapter", &QuantLibAddinCpp::qlCotSwapToFwdAdapter);
+    m.def("qlCoterminalSwapCurveState", &QuantLibAddinCpp::qlCoterminalSwapCurveState);
+    m.def("qlCubicInterpolation", &QuantLibAddinCpp::qlCubicInterpolation);
+    m.def("qlDaAsianOption", &QuantLibAddinCpp::qlDaAsianOption);
+    m.def("qlDatedOISRateHelper", &QuantLibAddinCpp::qlDatedOISRateHelper);
+    m.def("qlDefaultEvent", &QuantLibAddinCpp::qlDefaultEvent);
+    m.def("qlDepositRateHelper", &QuantLibAddinCpp::qlDepositRateHelper);
+    m.def("qlDepositRateHelper2", &QuantLibAddinCpp::qlDepositRateHelper2);
+    m.def("qlDigitalCmsLeg", &QuantLibAddinCpp::qlDigitalCmsLeg);
+    m.def("qlDigitalIborLeg", &QuantLibAddinCpp::qlDigitalIborLeg);
+    m.def("qlDiscountCurve", &QuantLibAddinCpp::qlDiscountCurve);
+    m.def("qlDiscountingFxForwardEngine", &QuantLibAddinCpp::qlDiscountingFxForwardEngine);
+    m.def("qlDiscountingSwapEngine", &QuantLibAddinCpp::qlDiscountingSwapEngine);
+    m.def("qlDividendVanillaOption", &QuantLibAddinCpp::qlDividendVanillaOption);
+    m.def("qlDoubleStickyRatchetPayoff", &QuantLibAddinCpp::qlDoubleStickyRatchetPayoff);
+    m.def("qlEndCriteria", &QuantLibAddinCpp::qlEndCriteria);
+    m.def("qlEonia", &QuantLibAddinCpp::qlEonia);
+    m.def("qlEuribor", &QuantLibAddinCpp::qlEuribor);
+    m.def("qlEuribor365", &QuantLibAddinCpp::qlEuribor365);
+    m.def("qlEuriborSwap", &QuantLibAddinCpp::qlEuriborSwap);
+    m.def("qlEuriborSwapIsdaFixA", &QuantLibAddinCpp::qlEuriborSwapIsdaFixA);
+    m.def("qlEurodollarFuturesImpliedStdDevQuote", &QuantLibAddinCpp::qlEurodollarFuturesImpliedStdDevQuote);
+    m.def("qlEuropeanExercise", &QuantLibAddinCpp::qlEuropeanExercise);
+    m.def("qlEuropeanOption", &QuantLibAddinCpp::qlEuropeanOption);
+    m.def("qlEvolutionDescription", &QuantLibAddinCpp::qlEvolutionDescription);
+    m.def("qlEvolutionDescriptionFromProduct", &QuantLibAddinCpp::qlEvolutionDescriptionFromProduct);
+    m.def("qlExponentialForwardCorrelation", &QuantLibAddinCpp::qlExponentialForwardCorrelation);
+    m.def("qlExtrapolatorEnableExtrapolation", &QuantLibAddinCpp::qlExtrapolatorEnableExtrapolation);
+    m.def("qlFRA", &QuantLibAddinCpp::qlFRA);
+    m.def("qlFaureRsg", &QuantLibAddinCpp::qlFaureRsg);
+    m.def("qlFixedRateBond", &QuantLibAddinCpp::qlFixedRateBond);
+    m.def("qlFixedRateBondHelper", &QuantLibAddinCpp::qlFixedRateBondHelper);
+    m.def("qlFixedRateLeg", &QuantLibAddinCpp::qlFixedRateLeg);
+    m.def("qlFixedRateLeg2", &QuantLibAddinCpp::qlFixedRateLeg2);
+    m.def("qlFlatForward", &QuantLibAddinCpp::qlFlatForward);
+    m.def("qlFlatHazardRate", &QuantLibAddinCpp::qlFlatHazardRate);
+    m.def("qlFlatSmileSection", &QuantLibAddinCpp::qlFlatSmileSection);
+    m.def("qlFlatVol", &QuantLibAddinCpp::qlFlatVol);
+    m.def("qlFlatVolFactory", &QuantLibAddinCpp::qlFlatVolFactory);
+    m.def("qlFloatingRateBond", &QuantLibAddinCpp::qlFloatingRateBond);
+    m.def("qlForwardCurve", &QuantLibAddinCpp::qlForwardCurve);
+    m.def("qlForwardRateIpc", &QuantLibAddinCpp::qlForwardRateIpc);
+    m.def("qlForwardRateNormalPc", &QuantLibAddinCpp::qlForwardRateNormalPc);
+    m.def("qlForwardRatePc", &QuantLibAddinCpp::qlForwardRatePc);
+    m.def("qlForwardSpreadedTermStructure", &QuantLibAddinCpp::qlForwardSpreadedTermStructure);
+    m.def("qlForwardSwapQuote", &QuantLibAddinCpp::qlForwardSwapQuote);
+    m.def("qlForwardValueQuote", &QuantLibAddinCpp::qlForwardValueQuote);
+    m.def("qlForwardVanillaOption", &QuantLibAddinCpp::qlForwardVanillaOption);
+    m.def("qlFraRateHelper", &QuantLibAddinCpp::qlFraRateHelper);
+    m.def("qlFraRateHelper2", &QuantLibAddinCpp::qlFraRateHelper2);
+    m.def("qlFuturesConvAdjustmentQuote", &QuantLibAddinCpp::qlFuturesConvAdjustmentQuote);
+    m.def("qlFuturesRateHelper", &QuantLibAddinCpp::qlFuturesRateHelper);
+    m.def("qlFuturesRateHelper2", &QuantLibAddinCpp::qlFuturesRateHelper2);
+    m.def("qlFuturesRateHelper3", &QuantLibAddinCpp::qlFuturesRateHelper3);
+    m.def("qlFwdPeriodAdapter", &QuantLibAddinCpp::qlFwdPeriodAdapter);
+    m.def("qlFwdToCotSwapAdapter", &QuantLibAddinCpp::qlFwdToCotSwapAdapter);
+    m.def("qlFxForward", &QuantLibAddinCpp::qlFxForward);
+    m.def("qlFxSwapRateHelper", &QuantLibAddinCpp::qlFxSwapRateHelper);
+    m.def("qlGMCLossModel", &QuantLibAddinCpp::qlGMCLossModel);
+    m.def("qlGRandomRRMCLossModel", &QuantLibAddinCpp::qlGRandomRRMCLossModel);
+    m.def("qlGeneralizedBlackScholesProcess", &QuantLibAddinCpp::qlGeneralizedBlackScholesProcess);
+    m.def("qlHaltonRsg", &QuantLibAddinCpp::qlHaltonRsg);
+    m.def("qlHandleCurrentLink", &QuantLibAddinCpp::qlHandleCurrentLink);
+    m.def("qlHandleEmpty", &QuantLibAddinCpp::qlHandleEmpty);
+    m.def("qlHazardRateCurve", &QuantLibAddinCpp::qlHazardRateCurve);
+    m.def("qlHistoricalForwardRatesAnalysis", &QuantLibAddinCpp::qlHistoricalForwardRatesAnalysis);
+    m.def("qlHistoricalRatesAnalysis", &QuantLibAddinCpp::qlHistoricalRatesAnalysis);
+    m.def("qlHullWhite", &QuantLibAddinCpp::qlHullWhite);
+    m.def("qlIborCouponPricer", &QuantLibAddinCpp::qlIborCouponPricer);
+    m.def("qlIborIborBasisSwapRateHelper", &QuantLibAddinCpp::qlIborIborBasisSwapRateHelper);
+    m.def("qlIborIndex", &QuantLibAddinCpp::qlIborIndex);
+    m.def("qlIborLeg", &QuantLibAddinCpp::qlIborLeg);
+    m.def("qlImpliedStdDevQuote", &QuantLibAddinCpp::qlImpliedStdDevQuote);
+    m.def("qlImpliedTermStructure", &QuantLibAddinCpp::qlImpliedTermStructure);
+    m.def("qlIncrementalStatistics", &QuantLibAddinCpp::qlIncrementalStatistics);
+    m.def("qlIndexAddFixings", &QuantLibAddinCpp::qlIndexAddFixings);
+    m.def("qlInstrumentNPV", &QuantLibAddinCpp::qlInstrumentNPV);
+    m.def("qlInstrumentSetPricingEngine", &QuantLibAddinCpp::qlInstrumentSetPricingEngine);
+    m.def("qlInstrumentValuationDate", &QuantLibAddinCpp::qlInstrumentValuationDate);
+    m.def("qlIntegralNtdEngine", &QuantLibAddinCpp::qlIntegralNtdEngine);
+    m.def("qlInterestRate", &QuantLibAddinCpp::qlInterestRate);
+    m.def("qlInterpolatedSmileSection", &QuantLibAddinCpp::qlInterpolatedSmileSection);
+    m.def("qlInterpolatedYieldCurve", &QuantLibAddinCpp::qlInterpolatedYieldCurve);
+    m.def("qlInterpolation", &QuantLibAddinCpp::qlInterpolation);
+    m.def("qlIssuer", &QuantLibAddinCpp::qlIssuer);
+    m.def("qlJamshidianSwaptionEngine", &QuantLibAddinCpp::qlJamshidianSwaptionEngine);
+    m.def("qlLMMCurveState", &QuantLibAddinCpp::qlLMMCurveState);
+    m.def("qlLastFixingQuote", &QuantLibAddinCpp::qlLastFixingQuote);
+    m.def("qlLeg", &QuantLibAddinCpp::qlLeg);
+    m.def("qlLegFromCapFloor", &QuantLibAddinCpp::qlLegFromCapFloor);
+    m.def("qlLegFromSwap", &QuantLibAddinCpp::qlLegFromSwap);
+    m.def("qlLegSetCouponPricers", &QuantLibAddinCpp::qlLegSetCouponPricers);
+    m.def("qlLevenbergMarquardt", &QuantLibAddinCpp::qlLevenbergMarquardt);
+    m.def("qlLibor", &QuantLibAddinCpp::qlLibor);
+    m.def("qlLiborSwap", &QuantLibAddinCpp::qlLiborSwap);
+    m.def("qlMTBrownianGeneratorFactory", &QuantLibAddinCpp::qlMTBrownianGeneratorFactory);
+    m.def("qlMakeCapFloor", &QuantLibAddinCpp::qlMakeCapFloor);
+    m.def("qlMakeCms", &QuantLibAddinCpp::qlMakeCms);
+    m.def("qlMakeDatedOIS", &QuantLibAddinCpp::qlMakeDatedOIS);
+    m.def("qlMakeIMMSwap", &QuantLibAddinCpp::qlMakeIMMSwap);
+    m.def("qlMakeOIS", &QuantLibAddinCpp::qlMakeOIS);
+    m.def("qlMakeSwaption", &QuantLibAddinCpp::qlMakeSwaption);
+    m.def("qlMakeVanillaSwap", &QuantLibAddinCpp::qlMakeVanillaSwap);
+    m.def("qlMarketModelLmExtLinearExponentialVolModel", &QuantLibAddinCpp::qlMarketModelLmExtLinearExponentialVolModel);
+    m.def("qlMarketModelLmLinearExponentialCorrelationModel", &QuantLibAddinCpp::qlMarketModelLmLinearExponentialCorrelationModel);
+    m.def("qlMarketModelMultiProductComposite", &QuantLibAddinCpp::qlMarketModelMultiProductComposite);
+    m.def("qlMarketModelMultiStepRatchet", &QuantLibAddinCpp::qlMarketModelMultiStepRatchet);
+    m.def("qlMarketModelOneStepForwards", &QuantLibAddinCpp::qlMarketModelOneStepForwards);
+    m.def("qlMarketModelOneStepOptionlets", &QuantLibAddinCpp::qlMarketModelOneStepOptionlets);
+    m.def("qlMersenneTwisterRsg", &QuantLibAddinCpp::qlMersenneTwisterRsg);
+    m.def("qlMidPointCDOEngine", &QuantLibAddinCpp::qlMidPointCDOEngine);
+    m.def("qlMidPointCdsEngine", &QuantLibAddinCpp::qlMidPointCdsEngine);
+    m.def("qlMixedLinearCubicInterpolation", &QuantLibAddinCpp::qlMixedLinearCubicInterpolation);
+    m.def("qlModelG2", &QuantLibAddinCpp::qlModelG2);
+    m.def("qlModelG2SwaptionEngine", &QuantLibAddinCpp::qlModelG2SwaptionEngine);
+    m.def("qlMtMCrossCurrencyBasisSwapRateHelper", &QuantLibAddinCpp::qlMtMCrossCurrencyBasisSwapRateHelper);
+    m.def("qlMultiPhaseLeg", &QuantLibAddinCpp::qlMultiPhaseLeg);
+    m.def("qlNoConstraint", &QuantLibAddinCpp::qlNoConstraint);
+    m.def("qlNthToDefault", &QuantLibAddinCpp::qlNthToDefault);
+    m.def("qlOISRateHelper", &QuantLibAddinCpp::qlOISRateHelper);
+    m.def("qlOvernightIborBasisSwapRateHelper", &QuantLibAddinCpp::qlOvernightIborBasisSwapRateHelper);
+    m.def("qlOvernightIndex", &QuantLibAddinCpp::qlOvernightIndex);
+    m.def("qlOvernightIndexFutureRateHelper", &QuantLibAddinCpp::qlOvernightIndexFutureRateHelper);
+    m.def("qlOvernightIndexedSwap", &QuantLibAddinCpp::qlOvernightIndexedSwap);
+    m.def("qlOvernightIndexedSwapFromOISRateHelper", &QuantLibAddinCpp::qlOvernightIndexedSwapFromOISRateHelper);
+    m.def("qlPiecewiseConstantAbcdVariance", &QuantLibAddinCpp::qlPiecewiseConstantAbcdVariance);
+    m.def("qlPiecewiseFlatForwardCurve", &QuantLibAddinCpp::qlPiecewiseFlatForwardCurve);
+    m.def("qlPiecewiseHazardRateCurve", &QuantLibAddinCpp::qlPiecewiseHazardRateCurve);
+    m.def("qlPiecewiseYieldCurve", &QuantLibAddinCpp::qlPiecewiseYieldCurve);
+    m.def("qlPiecewiseYieldCurveMixedInterpolation", &QuantLibAddinCpp::qlPiecewiseYieldCurveMixedInterpolation);
+    m.def("qlPricingEngine", &QuantLibAddinCpp::qlPricingEngine);
+    m.def("qlProxyIbor", &QuantLibAddinCpp::qlProxyIbor);
+    m.def("qlPseudoRootFacade", &QuantLibAddinCpp::qlPseudoRootFacade);
+    m.def("qlQuantoForwardVanillaOption", &QuantLibAddinCpp::qlQuantoForwardVanillaOption);
+    m.def("qlQuantoVanillaOption", &QuantLibAddinCpp::qlQuantoVanillaOption);
+    m.def("qlRangeAccrualFloatersCoupon", &QuantLibAddinCpp::qlRangeAccrualFloatersCoupon);
+    m.def("qlRangeAccrualFloatersCouponFromLeg", &QuantLibAddinCpp::qlRangeAccrualFloatersCouponFromLeg);
+    m.def("qlRangeAccrualLeg", &QuantLibAddinCpp::qlRangeAccrualLeg);
+    m.def("qlRangeAccrualPricerByBgm", &QuantLibAddinCpp::qlRangeAccrualPricerByBgm);
+    m.def("qlRatchetMaxPayoff", &QuantLibAddinCpp::qlRatchetMaxPayoff);
+    m.def("qlRatchetMinPayoff", &QuantLibAddinCpp::qlRatchetMinPayoff);
+    m.def("qlRatchetPayoff", &QuantLibAddinCpp::qlRatchetPayoff);
+    m.def("qlRateHelperImpliedQuote", &QuantLibAddinCpp::qlRateHelperImpliedQuote);
+    m.def("qlRateHelperQuoteError", &QuantLibAddinCpp::qlRateHelperQuoteError);
+    m.def("qlRateHelperQuoteIsValid", &QuantLibAddinCpp::qlRateHelperQuoteIsValid);
+    m.def("qlRateHelperQuoteName", &QuantLibAddinCpp::qlRateHelperQuoteName);
+    m.def("qlRateHelperQuoteValue", &QuantLibAddinCpp::qlRateHelperQuoteValue);
+    m.def("qlRelinkableHandleDefaultProbabilityTermStructure", &QuantLibAddinCpp::qlRelinkableHandleDefaultProbabilityTermStructure);
+    m.def("qlRelinkableHandleLinkTo", &QuantLibAddinCpp::qlRelinkableHandleLinkTo);
+    m.def("qlRelinkableHandleOptionletVolatilityStructure", &QuantLibAddinCpp::qlRelinkableHandleOptionletVolatilityStructure);
+    m.def("qlRelinkableHandleQuote", &QuantLibAddinCpp::qlRelinkableHandleQuote);
+    m.def("qlRelinkableHandleSwaptionVolatilityStructure", &QuantLibAddinCpp::qlRelinkableHandleSwaptionVolatilityStructure);
+    m.def("qlRelinkableHandleYieldTermStructure", &QuantLibAddinCpp::qlRelinkableHandleYieldTermStructure);
+    m.def("qlRendistatoBasket", &QuantLibAddinCpp::qlRendistatoBasket);
+    m.def("qlRendistatoCalculator", &QuantLibAddinCpp::qlRendistatoCalculator);
+    m.def("qlRendistatoEquivalentSwapLengthQuote", &QuantLibAddinCpp::qlRendistatoEquivalentSwapLengthQuote);
+    m.def("qlRendistatoEquivalentSwapSpreadQuote", &QuantLibAddinCpp::qlRendistatoEquivalentSwapSpreadQuote);
+    m.def("qlRiskyBondEngine", &QuantLibAddinCpp::qlRiskyBondEngine);
+    m.def("qlSABRInterpolation", &QuantLibAddinCpp::qlSABRInterpolation);
+    m.def("qlSabrInterpolatedSmileSection", &QuantLibAddinCpp::qlSabrInterpolatedSmileSection);
+    m.def("qlSabrInterpolatedSmileSection1", &QuantLibAddinCpp::qlSabrInterpolatedSmileSection1);
+    m.def("qlSabrSmileSection", &QuantLibAddinCpp::qlSabrSmileSection);
+    m.def("qlSchedule", &QuantLibAddinCpp::qlSchedule);
+    m.def("qlScheduleFromDateVector", &QuantLibAddinCpp::qlScheduleFromDateVector);
+    m.def("qlScheduleFullInterfaceFromDateVector", &QuantLibAddinCpp::qlScheduleFullInterfaceFromDateVector);
+    m.def("qlScheduleTruncated", &QuantLibAddinCpp::qlScheduleTruncated);
+    m.def("qlSequenceStatistics", &QuantLibAddinCpp::qlSequenceStatistics);
+    m.def("qlSequenceStatisticsInc", &QuantLibAddinCpp::qlSequenceStatisticsInc);
+    m.def("qlSettingsEvaluationDate", &QuantLibAddinCpp::qlSettingsEvaluationDate);
+    m.def("qlSettingsSetEvaluationDate", &QuantLibAddinCpp::qlSettingsSetEvaluationDate);
+    m.def("qlSimpleQuote", &QuantLibAddinCpp::qlSimpleQuote);
+    m.def("qlSimpleQuoteSetValue", &QuantLibAddinCpp::qlSimpleQuoteSetValue);
+    m.def("qlSimplex", &QuantLibAddinCpp::qlSimplex);
+    m.def("qlSmileSectionByCube", &QuantLibAddinCpp::qlSmileSectionByCube);
+    m.def("qlSmileSectionByCube2", &QuantLibAddinCpp::qlSmileSectionByCube2);
+    m.def("qlSobolRsg", &QuantLibAddinCpp::qlSobolRsg);
+    m.def("qlSonia", &QuantLibAddinCpp::qlSonia);
+    m.def("qlSpreadCdsHelper", &QuantLibAddinCpp::qlSpreadCdsHelper);
+    m.def("qlSpreadedOptionletVolatility", &QuantLibAddinCpp::qlSpreadedOptionletVolatility);
+    m.def("qlSpreadedSwaptionVolatility", &QuantLibAddinCpp::qlSpreadedSwaptionVolatility);
+    m.def("qlStatistics", &QuantLibAddinCpp::qlStatistics);
+    m.def("qlSteepestDescent", &QuantLibAddinCpp::qlSteepestDescent);
+    m.def("qlStickyMaxPayoff", &QuantLibAddinCpp::qlStickyMaxPayoff);
+    m.def("qlStickyMinPayoff", &QuantLibAddinCpp::qlStickyMinPayoff);
+    m.def("qlStickyPayoff", &QuantLibAddinCpp::qlStickyPayoff);
+    m.def("qlStrikedTypePayoff", &QuantLibAddinCpp::qlStrikedTypePayoff);
+    m.def("qlStrippedOptionlet", &QuantLibAddinCpp::qlStrippedOptionlet);
+    m.def("qlStrippedOptionletAdapter", &QuantLibAddinCpp::qlStrippedOptionletAdapter);
+    m.def("qlStrippedOptionletBaseSettlementDays", &QuantLibAddinCpp::qlStrippedOptionletBaseSettlementDays);
+    m.def("qlSwap", &QuantLibAddinCpp::qlSwap);
+    m.def("qlSwapIndex", &QuantLibAddinCpp::qlSwapIndex);
+    m.def("qlSwapRateHelper", &QuantLibAddinCpp::qlSwapRateHelper);
+    m.def("qlSwapRateHelper2", &QuantLibAddinCpp::qlSwapRateHelper2);
+    m.def("qlSwaption", &QuantLibAddinCpp::qlSwaption);
+    m.def("qlSwaptionHelper", &QuantLibAddinCpp::qlSwaptionHelper);
+    m.def("qlSwaptionVTSMatrix", &QuantLibAddinCpp::qlSwaptionVTSMatrix);
+    m.def("qlSwaptionVolCube1", &QuantLibAddinCpp::qlSwaptionVolCube1);
+    m.def("qlSwaptionVolCube2", &QuantLibAddinCpp::qlSwaptionVolCube2);
+    m.def("qlSyntheticCDO", &QuantLibAddinCpp::qlSyntheticCDO);
+    m.def("qlTMCLossModel", &QuantLibAddinCpp::qlTMCLossModel);
+    m.def("qlTRandomRRMCLossModel", &QuantLibAddinCpp::qlTRandomRRMCLossModel);
+    m.def("qlTermStructureMaxDate", &QuantLibAddinCpp::qlTermStructureMaxDate);
+    m.def("qlTermStructureReferenceDate", &QuantLibAddinCpp::qlTermStructureReferenceDate);
+    m.def("qlTermStructureSettlementDays", &QuantLibAddinCpp::qlTermStructureSettlementDays);
+    m.def("qlTimeSeries", &QuantLibAddinCpp::qlTimeSeries);
+    m.def("qlTreeSwaptionEngine", &QuantLibAddinCpp::qlTreeSwaptionEngine);
+    m.def("qlVanillaOption", &QuantLibAddinCpp::qlVanillaOption);
+    m.def("qlVanillaSwap", &QuantLibAddinCpp::qlVanillaSwap);
+    m.def("qlVanillaSwapFromSwapIndex", &QuantLibAddinCpp::qlVanillaSwapFromSwapIndex);
+    m.def("qlVanillaSwapFromSwapRateHelper", &QuantLibAddinCpp::qlVanillaSwapFromSwapRateHelper);
+    m.def("qlVasicek", &QuantLibAddinCpp::qlVasicek);
+    m.def("qlVersion", &QuantLibAddinCpp::qlVersion);
+    m.def("qlZeroCouponBond", &QuantLibAddinCpp::qlZeroCouponBond);
+    m.def("qlZeroCurve", &QuantLibAddinCpp::qlZeroCurve);
+}

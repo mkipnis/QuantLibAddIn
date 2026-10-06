@@ -98,6 +98,12 @@ add_subdirectory(QuantLibAddin)
 add_subdirectory(QuantLibXL)
 
 # -----------------------------------------------------------------------
+# QuantLibAddinPython — QuantLibAddinPython
+# -----------------------------------------------------------------------
+
+add_subdirectory(Python)
+
+# -----------------------------------------------------------------------
 # Full build: make the addin libraries depend on gensrc.
 # -----------------------------------------------------------------------
 
