@@ -96,18 +96,9 @@ jobs:
       matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
 
     env:
-      # IMPORTANT:
-      # Keep Boost OUTSIDE github.workspace.
-      #
-      # github.workspace is the source directory. If Boost is placed there,
-      # QuantLib's ql_library target ends up with an INTERFACE_INCLUDE_DIRECTORIES
-      # entry pointing into the source tree, which newer CMake rejects.
-      #
-      # runner.temp is outside the repository source tree.
       BOOST_ROOT_DIR: ${{ runner.temp }}\boost
-
       BUILD_DIR: ${{ github.workspace }}\build\ci-vs2026-${{ matrix.arch }}-static
-
+      
     steps:
 
       - name: Checkout QuantLibAddin
