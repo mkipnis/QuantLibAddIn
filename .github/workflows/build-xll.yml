@@ -90,24 +90,6 @@ jobs:
       - name: Checkout QuantLibAddin
         uses: actions/checkout@v4
 
-      - name: Clone QuantLib (same owner as this repo)
-        shell: pwsh
-        run: |
-          $owner = "${{ github.repository_owner }}"
-          $url   = "https://github.com/$owner/QuantLib.git"
-          Write-Host "Cloning $url @ ${{ github.event.inputs.quantlib_ref }} into QuantLib/"
-          git clone --depth 1 --branch "${{ github.event.inputs.quantlib_ref }}" $url QuantLib
-          if ($LASTEXITCODE -ne 0) {
-              Write-Host "Branch/tag clone failed; falling back to default branch + checkout"
-              git clone $url QuantLib
-              if ($LASTEXITCODE -ne 0) { throw "git clone of $url failed" }
-              git -C QuantLib checkout "${{ github.event.inputs.quantlib_ref }}"
-              if ($LASTEXITCODE -ne 0) { throw "git checkout of ${{ github.event.inputs.quantlib_ref }} failed" }
-          }
-          if (-not (Test-Path "QuantLib/ql/version.hpp")) {
-              throw "QuantLib sources not found after clone (QuantLib/ql/version.hpp missing)"
-          }
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
