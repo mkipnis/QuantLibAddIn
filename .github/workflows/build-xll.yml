@@ -1,14 +1,15 @@
-﻿name: Build QuantLibXL XLL
+name: Build QuantLibXL XLL
 
 # Manually-triggered build of the QuantLibXL Excel add-in (.xll) as a
-# static-CRT Release for both x64 and Win32 (x86).  Runs on the GitHub-hosted
+# static-CRT Release for both x64 and Win32 (x86). Runs on the GitHub-hosted
 # windows-latest runner (Visual Studio 2026, toolset v145) and uploads each
 # XLL as a build artifact.
 #
 # QuantLib is not committed to this repository (it is .gitignore'd), so it is
 # cloned at build time from the same owner as this repository:
-#   OpenSourceRisk/QuantLibAddIn  -> clones OpenSourceRisk/QuantLib
-#   eehlers/QuantLibAddIn         -> clones eehlers/QuantLib
+#   OpenSourceRisk/QuantLibAddIn -> clones OpenSourceRisk/QuantLib
+#   eehlers/QuantLibAddIn        -> clones eehlers/QuantLib
+#
 # The add-in build always expects the sources in a camel-case "QuantLib"
 # folder at the repository root.
 
@@ -19,10 +20,12 @@ on:
         description: "QuantLib git ref (branch, tag or SHA) to build against"
         required: true
         default: "excel"
+
       boost_version:
         description: "Boost version to build (dotted, e.g. 1.89.0). Must be new enough for the VS 2026 / v145 toolset."
         required: true
         default: "1.89.0"
+
       arch:
         description: "Which architecture(s) to build"
         required: true
@@ -32,11 +35,13 @@ on:
           - both
           - x64
           - Win32
+
       make_release:
         description: "Publish the package zip as a GitHub Release"
         required: true
         type: boolean
         default: false
+
       release_tag:
         description: "Tag for the GitHub Release (e.g. v1.42.0). Required when publishing."
         required: false
@@ -50,13 +55,14 @@ env:
   QLXL_VERSION: "1.42.0"
 
 jobs:
+
   setup:
-    # Build the matrix from the `arch` input so we can run only x64, only
-    # Win32, or both.  (A job-level `if` cannot reference `matrix`, so the leg
-    # selection must happen here.)
+    # Build the matrix from the `arch` input.
     runs-on: ubuntu-latest
+
     outputs:
       matrix: ${{ steps.set.outputs.matrix }}
+
     steps:
       - name: Compute build matrix
         id: set
@@ -64,18 +70,25 @@ jobs:
         run: |
           x64='{"arch":"x64","address_model":"64","vcvars_arch":"amd64","boost_stage":"stage","xll_name":"QuantLibXL-v145-x64-mt-s-1_42_0.xll"}'
           win32='{"arch":"Win32","address_model":"32","vcvars_arch":"x86","boost_stage":"stage32","xll_name":"QuantLibXL-v145-mt-s-1_42_0.xll"}'
+
           case "${{ inputs.arch }}" in
-            x64)   include="[$x64]" ;;
-            Win32) include="[$win32]" ;;
-            *)     include="[$x64,$win32]" ;;
+            x64)
+              include="[$x64]"
+              ;;
+            Win32)
+              include="[$win32]"
+              ;;
+            *)
+              include="[$x64,$win32]"
+              ;;
           esac
+
           echo "matrix={\"include\":$include}" >> "$GITHUB_OUTPUT"
+
 
   build-xll:
     needs: setup
-    # windows-latest maps to the windows-2025-vs2026 image (Visual Studio 2026
-    # / v145).  The Boost version below must be recent enough for its
-    # bootstrap.bat/b2 to recognise the v145 toolset.
+
     runs-on: windows-latest
 
     strategy:
@@ -83,17 +96,29 @@ jobs:
       matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
 
     env:
-      BOOST_ROOT_DIR: ${{ github.workspace }}\boost
+      # IMPORTANT:
+      # Keep Boost OUTSIDE github.workspace.
+      #
+      # github.workspace is the source directory. If Boost is placed there,
+      # QuantLib's ql_library target ends up with an INTERFACE_INCLUDE_DIRECTORIES
+      # entry pointing into the source tree, which newer CMake rejects.
+      #
+      # runner.temp is outside the repository source tree.
+      BOOST_ROOT_DIR: ${{ runner.temp }}\boost
+
       BUILD_DIR: ${{ github.workspace }}\build\ci-vs2026-${{ matrix.arch }}-static
 
     steps:
+
       - name: Checkout QuantLibAddin
         uses: actions/checkout@v4
+
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
 
       - name: Compute Boost identifiers
         id: boost
@@ -101,70 +126,163 @@ jobs:
         run: |
           $v = "${{ github.event.inputs.boost_version }}"
           $u = $v -replace '\.', '_'
-          "version=$v"          | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "underscore=$u"       | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "libdir=$env:BOOST_ROOT_DIR\${{ matrix.boost_stage }}\lib" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          "version=$v" |
+            Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          "underscore=$u" |
+            Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          "libdir=$env:BOOST_ROOT_DIR\${{ matrix.boost_stage }}\lib" |
+            Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
 
       - name: Cache Boost (${{ matrix.arch }})
         id: boost-cache
         uses: actions/cache@v4
         with:
           path: ${{ env.BOOST_ROOT_DIR }}
-          key: boost-${{ steps.boost.outputs.version }}-${{ matrix.arch }}-vc145-static-v1
+          key: boost-${{ steps.boost.outputs.version }}-${{ matrix.arch }}-vc145-static-v2
+
 
       - name: Build Boost (${{ matrix.arch }})
         if: steps.boost-cache.outputs.cache-hit != 'true'
         shell: cmd
         run: |
           setlocal enabledelayedexpansion
+
           set BOOST_V=${{ steps.boost.outputs.version }}
           set BOOST_U=${{ steps.boost.outputs.underscore }}
           set BOOST_DIR=%BOOST_ROOT_DIR%
+
+          echo.
+          echo ========================================
           echo Downloading Boost %BOOST_V%
-          curl -L -o boost.7z https://archives.boost.io/release/%BOOST_V%/source/boost_%BOOST_U%.7z || exit /b 1
-          7z x boost.7z -o"%GITHUB_WORKSPACE%" >nul || exit /b 1
-          move "%GITHUB_WORKSPACE%\boost_%BOOST_U%" "%BOOST_DIR%" || exit /b 1
+          echo ========================================
+          echo Boost directory:
+          echo %BOOST_DIR%
+          echo.
+
+          curl -L -o "%RUNNER_TEMP%\boost.7z" ^
+            https://archives.boost.io/release/%BOOST_V%/source/boost_%BOOST_U%.7z ^
+            || exit /b 1
+
+          echo Extracting Boost...
+
+          7z x "%RUNNER_TEMP%\boost.7z" ^
+            -o"%RUNNER_TEMP%" ^
+            >nul ^
+            || exit /b 1
+
+          if exist "%BOOST_DIR%" (
+            echo Removing existing Boost directory...
+            rmdir /s /q "%BOOST_DIR%"
+          )
+
+          move "%RUNNER_TEMP%\boost_%BOOST_U%" "%BOOST_DIR%" ^
+            || exit /b 1
+
           set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-          for /f "usebackq tokens=*" %%i in (`"!VSWHERE!" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
-          if not defined VSINSTALL ( echo Could not locate Visual Studio via vswhere & exit /b 1 )
-          echo Using Visual Studio at "!VSINSTALL!"
-          call "!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvars_arch }} || exit /b 1
+
+          for /f "usebackq tokens=*" %%i in (`
+            "!VSWHERE!" ^
+              -latest ^
+              -products * ^
+              -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
+              -property installationPath
+          `) do set "VSINSTALL=%%i"
+
+          if not defined VSINSTALL (
+            echo Could not locate Visual Studio via vswhere
+            exit /b 1
+          )
+
+          echo Using Visual Studio at:
+          echo "!VSINSTALL!"
+
+          call "!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat" ^
+            ${{ matrix.vcvars_arch }} ^
+            || exit /b 1
+
           cd /d "%BOOST_DIR%"
-          rem Boost's bootstrap engine builder only auto-detects up to vc143 and
-          rem reports "Unknown toolset: vcunk" for the VS 2026 (v145) compiler.
+
+          rem Boost's bootstrap engine builder only auto-detects up to vc143
+          rem and reports "Unknown toolset: vcunk" for VS 2026 / v145.
           rem Passing "msvc" forces it to use cl.exe from the vcvarsall
-          rem environment directly to build the b2 engine.
+          rem environment.
+
           call bootstrap.bat msvc || exit /b 1
-          rem b2 1.89 does not know the VS 2026 layout, so it can neither detect
-          rem the compiler (falls back to a bogus "msvc-6.0") nor generate the
-          rem compiler "setup" target (skips every object "for lack of
-          rem msvc-setup"). Register the toolset explicitly under the known
-          rem version 14.3, pointing both at the real v145 cl.exe AND at the
-          rem vcvarsall.bat we located with vswhere as the <setup> script.
-          for /f "delims=" %%i in ('where cl 2^>nul') do if not defined CL_EXE set "CL_EXE=%%i"
-          if not defined CL_EXE ( echo Could not locate cl.exe on PATH & exit /b 1 )
+
+          rem Boost 1.89 does not know the VS 2026 layout, so explicitly
+          rem register the actual compiler under the known msvc-14.3 toolset.
+
+          for /f "delims=" %%i in ('where cl 2^>nul') do (
+            if not defined CL_EXE set "CL_EXE=%%i"
+          )
+
+          if not defined CL_EXE (
+            echo Could not locate cl.exe on PATH
+            exit /b 1
+          )
+
           set "CL_JAM=!CL_EXE:\=/!"
+
           set "VCVARS=!VSINSTALL!\VC\Auxiliary\Build\vcvarsall.bat"
           set "VCVARS_JAM=!VCVARS:\=/!"
-          echo Using cl.exe at "!CL_EXE!"
-          echo Using vcvarsall at "!VCVARS!"
+
+          echo Using cl.exe:
+          echo "!CL_EXE!"
+
+          echo Using vcvarsall:
+          echo "!VCVARS!"
+
           > user-config.jam echo using msvc : 14.3 : "!CL_JAM!" : ^<setup^>"!VCVARS_JAM!" ^<setup-options^>${{ matrix.vcvars_arch }} ;
+
           .\b2 -j%NUMBER_OF_PROCESSORS% ^
               --user-config="%BOOST_DIR%\user-config.jam" ^
               toolset=msvc-14.3 ^
               address-model=${{ matrix.address_model }} ^
               architecture=x86 ^
-              link=static runtime-link=static threading=multi variant=release ^
+              link=static ^
+              runtime-link=static ^
+              threading=multi ^
+              variant=release ^
               --stagedir=${{ matrix.boost_stage }} ^
-              --with-filesystem --with-serialization --with-system ^
-              --with-thread --with-date_time --with-chrono --with-atomic ^
-              stage || exit /b 1
+              --with-filesystem ^
+              --with-serialization ^
+              --with-system ^
+              --with-thread ^
+              --with-date_time ^
+              --with-chrono ^
+              --with-atomic ^
+              stage ^
+              || exit /b 1
+
 
       - name: Configure (CMake, VS 2026 ${{ matrix.arch }}, static Release)
         shell: cmd
         run: |
-          cmake -S "%GITHUB_WORKSPACE%" -B "%BUILD_DIR%" ^
-              -G "Visual Studio 18 2026" -A ${{ matrix.arch }} ^
+          echo ========================================
+          echo CMake configuration
+          echo ========================================
+
+          echo Source:
+          echo %GITHUB_WORKSPACE%
+
+          echo Build:
+          echo %BUILD_DIR%
+
+          echo Boost:
+          echo %BOOST_ROOT_DIR%
+
+          echo Boost libraries:
+          echo ${{ steps.boost.outputs.libdir }}
+
+          cmake ^
+              -S "%GITHUB_WORKSPACE%" ^
+              -B "%BUILD_DIR%" ^
+              -G "Visual Studio 18 2026" ^
+              -A ${{ matrix.arch }} ^
               -DRUN_GENSRC=ON ^
               -DMSVC_LINK_DYNAMIC_RUNTIME=OFF ^
               -DBoost_USE_STATIC_RUNTIME=ON ^
@@ -172,25 +290,43 @@ jobs:
               -DQL_BUILD_TEST_SUITE=OFF ^
               -DQL_ENABLE_SESSIONS=ON ^
               -DBOOST_INCLUDEDIR="%BOOST_ROOT_DIR%" ^
-              -DBOOST_LIBRARYDIR="${{ steps.boost.outputs.libdir }}" || exit /b 1
+              -DBOOST_LIBRARYDIR="${{ steps.boost.outputs.libdir }}" ^
+              || exit /b 1
+
 
       - name: Build QuantLibXL (Release)
         shell: cmd
         run: |
-          cmake --build "%BUILD_DIR%" --config Release --target QuantLibXL || exit /b 1
+          cmake --build "%BUILD_DIR%" ^
+            --config Release ^
+            --target QuantLibXL ^
+            || exit /b 1
+
 
       - name: Verify XLL output
         shell: pwsh
         run: |
-          $xll = Join-Path $env:BUILD_DIR "xll\${{ matrix.xll_name }}"
+          $xll = Join-Path `
+            $env:BUILD_DIR `
+            "xll\${{ matrix.xll_name }}"
+
           if (-not (Test-Path $xll)) {
               Write-Host "Expected XLL not found: $xll"
-              Get-ChildItem -Recurse (Join-Path $env:BUILD_DIR "xll") -ErrorAction SilentlyContinue |
-                  Select-Object FullName, Length
+
+              Get-ChildItem `
+                -Recurse `
+                (Join-Path $env:BUILD_DIR "xll") `
+                -ErrorAction SilentlyContinue |
+                Select-Object FullName, Length
+
               throw "XLL not produced"
           }
+
           $item = Get-Item $xll
-          Write-Host "Produced $($item.FullName) ($([math]::Round($item.Length/1MB,2)) MB)"
+
+          Write-Host `
+            "Produced $($item.FullName) ($([math]::Round($item.Length/1MB,2)) MB)"
+
 
       - name: Upload XLL artifact
         uses: actions/upload-artifact@v4
@@ -199,14 +335,18 @@ jobs:
           path: ${{ env.BUILD_DIR }}\xll\${{ matrix.xll_name }}
           if-no-files-found: error
 
+
   package:
-    # Bundle both XLLs and the up-to-date example spreadsheets into a single
-    # downloadable zip whose contents extract under a versioned root folder.
+    # Bundle both XLLs and the example spreadsheets into a single package.
     needs: build-xll
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout QuantLibAddin (for example spreadsheets)
+
+      - name: Checkout QuantLibAddin
         uses: actions/checkout@v4
+
 
       - name: Download built XLLs
         uses: actions/download-artifact@v4
@@ -215,53 +355,74 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+
       - name: Stage package contents
         shell: bash
         run: |
-          # Stage under a wrapper dir so upload-artifact keeps the versioned
-          # root folder inside the zip (it strips the common ancestor path).
           root="dist/QuantLibXL-${QLXL_VERSION}"
-          mkdir -p "$root/Addins/x64" "$root/Addins/Win32" "$root/Examples"
-          # Sort each XLL into an arch-specific subfolder so end users cannot
-          # accidentally load the wrong bitness. The x64 XLL name contains
-          # "-x64-"; the Win32 XLL does not.
+
+          mkdir -p \
+            "$root/Addins/x64" \
+            "$root/Addins/Win32" \
+            "$root/Examples"
+
           for xll in artifacts/*.xll; do
             case "$(basename "$xll")" in
-              *-x64-*) cp "$xll" "$root/Addins/x64/" ;;
-              *)       cp "$xll" "$root/Addins/Win32/" ;;
+              *-x64-*)
+                cp "$xll" "$root/Addins/x64/"
+                ;;
+              *)
+                cp "$xll" "$root/Addins/Win32/"
+                ;;
             esac
           done
-          cp "QuantLibXL/StandaloneExamples/Analytics/InterestRateDerivatives.xlsx" "$root/Examples/"
-          cp "QuantLibXL/StandaloneExamples/Analytics/YieldCurveBootstrapping.xlsx" "$root/Examples/"
+
+          cp \
+            "QuantLibXL/StandaloneExamples/Analytics/InterestRateDerivatives.xlsx" \
+            "$root/Examples/"
+
+          cp \
+            "QuantLibXL/StandaloneExamples/Analytics/YieldCurveBootstrapping.xlsx" \
+            "$root/Examples/"
+
           echo "Package tree:"
           find dist -type f
+
 
       - name: Upload QuantLibXL package
         uses: actions/upload-artifact@v4
         with:
-          # The uploaded artifact is itself a zip. Pointing at the wrapper
-          # "dist" dir makes the QuantLibXL-<version>/ folder the extraction
-          # root inside the zip.
           name: QuantLibXL-${{ env.QLXL_VERSION }}
           path: dist/
           if-no-files-found: error
+
 
       - name: Create release zip
         if: ${{ inputs.make_release }}
         shell: bash
         run: |
           if [ -z "${{ inputs.release_tag }}" ]; then
-            echo "release_tag must be set when make_release is true"; exit 1
+            echo "release_tag must be set when make_release is true"
+            exit 1
           fi
-          # A release should contain both architectures.
+
           if [ "${{ inputs.arch }}" != "both" ]; then
-            echo "make_release requires arch=both so the package has both XLLs (got '${{ inputs.arch }}')"; exit 1
+            echo "make_release requires arch=both"
+            exit 1
           fi
+
           zip_name="QuantLibXL-${QLXL_VERSION}.zip"
-          ( cd dist && zip -r "../${zip_name}" "QuantLibXL-${QLXL_VERSION}" )
+
+          (
+            cd dist
+            zip -r "../${zip_name}" "QuantLibXL-${QLXL_VERSION}"
+          )
+
           echo "ZIP_NAME=${zip_name}" >> "$GITHUB_ENV"
+
           echo "Created ${zip_name}:"
           unzip -l "${zip_name}"
+
 
       - name: Publish GitHub Release
         if: ${{ inputs.make_release }}
@@ -269,20 +430,29 @@ jobs:
         with:
           tag_name: ${{ inputs.release_tag }}
           name: QuantLibXL ${{ env.QLXL_VERSION }}
+
           body: |
-            QuantLibXL ${{ env.QLXL_VERSION }} Excel add-ins (static-CRT Release, VS 2026 / v145)
-            built against QuantLib `${{ inputs.quantlib_ref }}` and Boost ${{ inputs.boost_version }}.
+            QuantLibXL ${{ env.QLXL_VERSION }} Excel add-ins
+            (static-CRT Release, VS 2026 / v145)
 
-            **Download `${{ env.ZIP_NAME }}`** below. (The "Source code (zip/tar.gz)"
-            entries are GitHub's automatically generated repository snapshots, not
-            the add-in package.)
+            Built against QuantLib `${{ inputs.quantlib_ref }}`
+            and Boost ${{ inputs.boost_version }}.
 
-            It extracts to a `QuantLibXL-${{ env.QLXL_VERSION }}/` folder containing:
-            - `Addins/x64/` - the 64-bit XLL (load this in 64-bit Excel)
-            - `Addins/Win32/` - the 32-bit XLL (load this in 32-bit Excel)
-            - `Examples/` - up-to-date example spreadsheets
+            **Download `${{ env.ZIP_NAME }}` below.**
+
+            The "Source code (zip/tar.gz)" entries are GitHub's
+            automatically generated repository snapshots, not the
+            add-in package.
+
+            It extracts to a
+            `QuantLibXL-${{ env.QLXL_VERSION }}/` folder containing:
+
+            - `Addins/x64/` - 64-bit XLL
+            - `Addins/Win32/` - 32-bit XLL
+            - `Examples/` - example spreadsheets
 
             Load only the XLL that matches your Excel bitness.
+
           files: ${{ env.ZIP_NAME }}
           draft: false
           prerelease: false
