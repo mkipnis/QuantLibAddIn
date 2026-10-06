@@ -51,8 +51,8 @@ permissions:
   contents: write
 
 env:
-  # Release/package version. Matches the version tag in the XLL file names.
   QLXL_VERSION: "1.42.0"
+
 
 jobs:
 
@@ -64,6 +64,7 @@ jobs:
       matrix: ${{ steps.set.outputs.matrix }}
 
     steps:
+
       - name: Compute build matrix
         id: set
         shell: bash
@@ -96,14 +97,21 @@ jobs:
       matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
 
     env:
-      BOOST_ROOT_DIR: ${{ runner.temp }}\boost
       BUILD_DIR: ${{ github.workspace }}\build\ci-vs2026-${{ matrix.arch }}-static
-      
+
     steps:
+
+      # RUNNER_TEMP is provided by GitHub Actions as an environment variable.
+      # Using it here avoids the unavailable `runner.temp` expression in job env.
+      - name: Set build environment
+        shell: pwsh
+        run: |
+          "BOOST_ROOT_DIR=$env:RUNNER_TEMP\boost" |
+            Out-File -FilePath $env:GITHUB_ENV -Append
+
 
       - name: Checkout QuantLibAddin
         uses: actions/checkout@v4
-
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -268,6 +276,9 @@ jobs:
 
           echo Boost libraries:
           echo ${{ steps.boost.outputs.libdir }}
+
+          echo QuantLib:
+          echo %GITHUB_WORKSPACE%\QuantLib
 
           cmake ^
               -S "%GITHUB_WORKSPACE%" ^
