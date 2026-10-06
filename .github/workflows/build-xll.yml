@@ -18,7 +18,7 @@ on:
       quantlib_ref:
         description: "QuantLib git ref (branch, tag or SHA) to build against"
         required: true
-        default: "master"
+        default: "excel"
       boost_version:
         description: "Boost version to build (dotted, e.g. 1.89.0). Must be new enough for the VS 2026 / v145 toolset."
         required: true
