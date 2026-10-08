@@ -121,15 +121,25 @@ XLL_DEC OPER *qlCalendarAdvance(
 
         static XLOPER returnValue;
 
+	typedef QuantLib::Date
+		(QuantLib::Calendar::*qlCalendarAdvanceSignatureManual)(
+		const QuantLib::Date&,
+		const QuantLib::Period&,
+		QuantLib::BusinessDayConvention,
+		bool
+	) const;
+
         QuantLibAddin::qlCalendarAdvanceBindManual bindObject =
-            boost::bind((QuantLibAddin::qlCalendarAdvanceSignatureManual)
-                &QuantLib::Calendar::advance,
+            boost::bind(
+		static_cast<qlCalendarAdvanceSignatureManual>(
+                &QuantLib::Calendar::advance),
                 calendarEnum,
                 StartDateLib,
-                _1,
+                boost::placeholders::_1,
                 BusinessDayConventionEnum,
-                EndOfMonthCpp,
-                QuantLib::ext::optional<QuantLib::BusinessDayConvention>());
+                EndOfMonthCpp
+                );
+
         ObjectHandler::loop
             <QuantLibAddin::qlCalendarAdvanceBindManual, QuantLib::Period, QuantLib::Date>
             (functionCall, bindObject, Period, returnValue);
