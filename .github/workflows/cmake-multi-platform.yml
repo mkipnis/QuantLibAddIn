@@ -14,6 +14,8 @@ env:
 jobs:
   build:
     name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -22,9 +24,11 @@ jobs:
           - macos-latest
           - windows-latest
 
-    runs-on: ${{ matrix.os }}
-
     steps:
+      # ---------------------------------------------------------------
+      # Checkout
+      # ---------------------------------------------------------------
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -43,6 +47,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pybind11 ninja build scikit-build-core
+
+      - name: Display Python configuration
+        run: |
+          python --version
+          python -c "import sys; print(sys.executable)"
+          python -m pybind11 --cmakedir
 
       # ---------------------------------------------------------------
       # Ubuntu dependencies
@@ -66,18 +76,19 @@ jobs:
 
       # ---------------------------------------------------------------
       # Windows dependencies
+      #
+      # Install the complete Boost package so headers such as
+      # boost/bimap/bimap.hpp are available to QuantLib.
       # ---------------------------------------------------------------
 
       - name: Install Boost (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install `
-            boost-filesystem:x64-windows `
-            boost-serialization:x64-windows
+          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install boost:x64-windows
 
       # ---------------------------------------------------------------
-      # Configure CMake
+      # Configure CMake: Linux and macOS
       # ---------------------------------------------------------------
 
       - name: Configure CMake (Linux/macOS)
@@ -85,15 +96,23 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DPython_EXECUTABLE="$(python -c 'import sys; print(sys.executable)')" \
             -DRUN_GENSRC=ON \
             -DBUILD_DOCS=OFF
+
+      # ---------------------------------------------------------------
+      # Configure CMake: Windows
+      # ---------------------------------------------------------------
 
       - name: Configure CMake (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $pythonExe = python -c "import sys; print(sys.executable)"
+
           cmake -S . -B build `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            "-DPython_EXECUTABLE=$pythonExe" `
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
             -DRUN_GENSRC=ON `
             -DBUILD_DOCS=OFF
@@ -103,14 +122,27 @@ jobs:
       # ---------------------------------------------------------------
 
       - name: Build QuantLibAddin
-        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
+        run: |
+          cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
 
       # ---------------------------------------------------------------
       # Test
       # ---------------------------------------------------------------
 
       - name: Run CTest
-        run: ctest --test-dir build -C ${{ env.BUILD_TYPE }} --output-on-failure
+        run: |
+          ctest --test-dir build `
+            -C ${{ env.BUILD_TYPE }} `
+            --output-on-failure
+        shell: pwsh
+        if: runner.os == 'Windows'
+
+      - name: Run CTest (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          ctest --test-dir build \
+            -C ${{ env.BUILD_TYPE }} \
+            --output-on-failure
 
       # ---------------------------------------------------------------
       # Report
