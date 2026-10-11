@@ -90,6 +90,7 @@ target_include_directories(
         #   #include <oh/property.hpp>
         #   #include <oh/repository.hpp>
         ${CMAKE_CURRENT_SOURCE_DIR}/../ObjectHandler
+        ${CMAKE_CURRENT_SOURCE_DIR}/../QuantLib
 )
 
 # -----------------------------------------------------------------------

@@ -1,2 +1,3 @@
-clang
 pybind11
+tree-sitter
+tree-sitter-cpp
