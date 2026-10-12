@@ -42,7 +42,7 @@ if(RUN_GENSRC)
 
 	# The ObjectHandler gensrc command (Excel, Doxygen, Loops, ValueObjects).
 	set(_ohgensrc_cmd ${Python3_EXECUTABLE} ${_gensrc_dir}/gensrc.py -xdlv --oh_dir=..)
-	set(_ohgensrc_wd  ${CMAKE_SOURCE_DIR}/ObjectHandler/gensrc)
+	set(_ohgensrc_wd  ${PROJECT_SOURCE_DIR}/ObjectHandler/gensrc)
 
 	# The QuantLibAddin gensrc command.  On Windows the Excel target (x) is
 	# included; on other platforms only the C++ addin targets are generated
@@ -54,7 +54,7 @@ if(RUN_GENSRC)
 		set(_qlgensrc_flags -pvels)
 	endif()
 	set(_qlgensrc_cmd ${Python3_EXECUTABLE} ${_gensrc_dir}/gensrc.py ${_qlgensrc_flags} --oh_dir=../../ObjectHandler)
-	set(_qlgensrc_wd  ${CMAKE_SOURCE_DIR}/QuantLibAddin/gensrc)
+	set(_qlgensrc_wd  ${PROJECT_SOURCE_DIR}/QuantLibAddin/gensrc)
 
 	# -------------------------------------------------------------------
 	# Configure-time generation.
