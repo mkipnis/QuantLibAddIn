@@ -24,6 +24,7 @@
 
 namespace QuantLib {
     class Extrapolator;
+    class YieldTermStructure;
 }
 
 namespace QuantLibAddin {
@@ -34,6 +35,14 @@ namespace QuantLibAddin {
         protected:
             OH_LIB_CTOR(Extrapolator, QuantLib::Extrapolator)
     };
+
+   class YieldTermStructureExtrapolator : public ObjectHandler::LibraryObject<QuantLib::YieldTermStructure> {
+        public:
+            void enableExtrapolation(bool b);
+        protected:
+            OH_LIB_CTOR(YieldTermStructureExtrapolator, QuantLib::YieldTermStructure)
+    };
+
 
 }
 
