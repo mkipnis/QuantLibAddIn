@@ -23,9 +23,17 @@
 #include <qlo/extrapolator.hpp>
 #include <ql/math/interpolations/extrapolation.hpp>
 
+#include <ql/termstructures/yieldtermstructure.hpp>
+
 namespace QuantLibAddin {
 
     void Extrapolator::enableExtrapolation(bool b) {
+        libraryObject_->enableExtrapolation(b);
+        boost::shared_ptr<ObjectHandler::ValueObject> inst_properties = properties();
+        inst_properties->setProperty("UserExtrapolation", b);
+    }
+
+    void YieldTermStructureExtrapolator::enableExtrapolation(bool b) {
         libraryObject_->enableExtrapolation(b);
         boost::shared_ptr<ObjectHandler::ValueObject> inst_properties = properties();
         inst_properties->setProperty("UserExtrapolation", b);

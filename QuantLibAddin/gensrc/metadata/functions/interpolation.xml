@@ -6,16 +6,19 @@
     <include>qlo/interpolation.hpp</include>
     <include>qlo/interpolation2D.hpp</include>
     <include>qlo/optimization.hpp</include>
+    <include>qlo/conversions/coercetermstructure.hpp</include>
   </serializationIncludes>
   <addinIncludes>
     <include>qlo/interpolation.hpp</include>
     <include>qlo/interpolation2D.hpp</include>
     <include>qlo/optimization.hpp</include>
+    <include>qlo/conversions/coercetermstructure.hpp</include>
     
     <include>ql/math/interpolations/sabrinterpolation.hpp</include>
     <include>ql/math/interpolations/abcdinterpolation.hpp</include>
     <include>ql/math/interpolations/interpolation2d.hpp</include>
-  </addinIncludes>
+  
+</addinIncludes>
   <copyright>
     Copyright (C) 2006, 2007, 2008, 2010 Ferdinando Ametrano
     Copyright (C) 2007 Eric Ehlers
@@ -26,6 +29,31 @@
 
     <Member name='qlExtrapolatorEnableExtrapolation' type='QuantLibAddin::Extrapolator'>
       <description>Sets the enable extrapolation flag to the given Extrapolator object.</description>
+      <libraryFunction>enableExtrapolation</libraryFunction>
+      <SupportedPlatforms>
+        <!--SupportedPlatform name='Excel' calcInWizard='false'/-->
+        <SupportedPlatform name='Excel'/>
+        <SupportedPlatform name='Cpp'/>
+      </SupportedPlatforms>
+      <ParameterList>
+        <Parameters>
+          <Parameter name='ExtrapolationFlag' default='true'>
+            <type>bool</type>
+            <tensorRank>scalar</tensorRank>
+            <description>global extrapolation flag.</description>
+          </Parameter>
+        </Parameters>
+      </ParameterList>
+      <ReturnValue>
+        <type>void</type>
+        <tensorRank>scalar</tensorRank>
+      </ReturnValue>
+    </Member>
+
+    <!-- Extrapolator interface - YieldTermStructure-->
+
+    <Member name='qlYieldTermStructureEnableExtrapolation' type='QuantLib::YieldTermStructure'>
+      <description>Sets the enable extrapolation flag to the given Extrapolator(YieldTermStructure) object.</description>
       <libraryFunction>enableExtrapolation</libraryFunction>
       <SupportedPlatforms>
         <!--SupportedPlatform name='Excel' calcInWizard='false'/-->
